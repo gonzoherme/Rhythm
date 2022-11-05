@@ -6,20 +6,18 @@ from pydub.playback import play # to play an audio file
 
 from tkinter import *
 
-
 def getSongs():
-    # dir_path = r'/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/songs'
-    # file_names = os.listdir(dir_path) # list file and directories
-    # file_names.remove('.DS_Store') # remove mac os file
+    dir_path = r'/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/songs'
+    file_names = os.listdir(dir_path) # list file and directories
+    file_names.remove('.DS_Store') # remove mac os file
 
-    # song_list = []
-    # for song in file_names:
-    #     tempo = getBPM(song)
-    #     song_list.append([song, tempo])
+    song_list = []
+    for song in file_names:
+        tempo = getBPM(song)
+        song_list.append([song, tempo])
     
-    # return song_list
-    return None
-    
+    return song_list
+
 ## Ideas:
 # Top Down design: the first thing I need to write is simply the program that gets a song and increases or decreases its rythm
 
