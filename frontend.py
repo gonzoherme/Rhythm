@@ -5,6 +5,67 @@ from backend import *
 from random import randint
 import time
 from PIL import Image, ImageTk, ImageSequence
+# import module_manager
+# module_manager.review()
+
+
+######################### BUTTONS ##################
+
+class Button():
+    def __init__(self, name, buttonNum, app):
+        self.name = name
+        self.buttonNum = buttonNum
+        self.setSize(app)
+        self.pressed = False
+
+    def setSize(self, app):
+        self.centerButtonX = app.width - app.width/8
+        buttonWidth = app.width/5
+        buttonHeight = app.height // 20
+        self.fontSize = app.height // 100
+        self.topLeftX = self.centerButtonX - buttonWidth/2
+        self.bottomRightX = self.centerButtonX + buttonWidth/2
+        self.fontSize = app.width // 100
+        if self.buttonNum >= 0:
+            self.topLeftY = buttonHeight/2 + self.buttonNum * buttonHeight * 3/2
+            self.bottomRightY = buttonHeight * 3/2 + self.buttonNum * buttonHeight * 3/2
+        else:
+            self.buttonNum += 1
+            self.topLeftY = app.height - buttongHeight * 3/2 + self.buttonNum * buttonHeight * 3/2
+            self.bottomRightY = app.height - buttonHeight/2 + self.buttonNum*buttonHeight
+
+    def setText(self, text):
+        self.text = text
+
+
+        def press(self, event, app):
+            # Button Changing State
+            if (self.topLeftX < event.x < self.bottomRightX and
+                self.topLeftY < event.y < self.bottomRightY):
+                self.pressed = True
+            else:
+                self.pressed = False
+            if not self.pressed:
+                return
+
+        def draw(self, canvas):
+            if self.pressed:
+                fill = 'white'
+            else:
+                fill = 'gray'
+
+            canvas.create_rectangle(self.topLeftX, self.topLeftY,
+                                    self.bottomRightX, self.bottomRightY,
+                                    fill = fill)
+
+            canvas.create_text(self.centerButtonX, self.centerButtonY,
+                               text = self.text,
+                               fill = 'black',
+                               font = f'Visby {self.fontSize} bold')
+                
+
+##################################################
+
 
 ########## MODEL ################
 def appStarted(app):
@@ -43,6 +104,10 @@ def appStarted(app):
 
 # NOTE: at the top of the page, we need to add two counters, one for height and one for speed, and next to each of them, and up arrow and a down arrow rectangles. So that the user can click on any of them to increase speed of song
 
+
+
+        
+        
 
     
 ######### CONTROLLERS #############
@@ -83,7 +148,7 @@ def mousePressed(app, event):
             app.pace += 1
 
             # Substitute all files with changed paced ones
-            # The only temmpo we keep is the original song tempo, because all changes in pace will be done relative to that one
+            # The only tempo we keep is the original song tempo, because all changes in pace will be done relative to that one
             for song in app.songs:
                 changeTempo(song[1], song[0], app.pace)
 

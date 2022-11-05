@@ -1,3 +1,9 @@
+_LEARNED FROM MEETING_
+ - Remove gyroscope (too complicated, not enough time)
+ - Add spacebar clicking algorithm TAP BPM algorithm
+ - With OpenCV, you code a slider for speed, move with finger. Right faster, left slower.
+ 
+
 
 FEATURES: USE LIBRARIES!
 
@@ -10,10 +16,7 @@ FEATURES: USE LIBRARIES!
 But for this project I will do it with the spacebar, and the rhythm you click the spacebar marks the rhythm of the song.
 
 
-I want a third mode,  called push your limits, where you indicate with one of your five fingers the level  you want it to go at: https://www.youtube.com/watch?v=p5Z_GGRCI5s HERE IS HOW YOU DO IT
-
 Graphics: I want to have background black, add gif of NCS that goes to the rhythm of the song. Each gif is of different color for each level
-
 
 
 Bro: incredible idea: add a multiplayer, so that you can race / run with other people live, in the same time. So you both connect, and then you both run to the same song.
