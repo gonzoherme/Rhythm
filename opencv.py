@@ -13,13 +13,16 @@ def startOpenCV():
     height = 480
 
     # Setting up the camera
-    cap = cv.VideoCapture(0)
+    cap = cv.VideoCapture(0) #cap is an object for video capturing
     # setting dimensions
     cap.set(4, width)
     cap.set(3, height)
 
+    
+
     # Hand Detector
     detector = HandDetector(detectionCon = 0.8, maxHands = 1)
+
     
     ############### READING WEBCAM ##########################
     while True:
@@ -44,5 +47,6 @@ def startOpenCV():
             print(fingers)
                 
 
+startOpenCV()            
             
 # Esto va a ser la clave para hacer el slider!!!: https://www.youtube.com/watch?v=jzXZVFqEE2I

@@ -51,8 +51,11 @@ class Song(object):
         self.loop = False
 
         # Cuantitative properties
+        # y is the time series: the audio signal represented as a one-dimensional numpy.ndarray
+        # sr is the sample rate (number of samples per second)
         self.y, self.sr = librosa.load(self.path)
-        self.tempo, self.beat_frames = librosa.beat.beat_track(y = self.y, sr = self.sr)        
+        self.tempo, self.beat_frames = librosa.beat.beat_track(y = self.y, sr = self.sr)
+        print(self.tempo)
 
         
 
@@ -86,8 +89,8 @@ class Song(object):
             except: pass
 
     # def getBPM(self):
-    #     # y is the time series: the audio signal represented as a one-dimensional numpy.ndarray
-    #     # sr is the sample rate (number of samples per second)
+    #     
+    #     
     #     y, sr = librosa.load(self.path)
     #     tempo, beat_frames = librosa.beat.beat_track(y = y, sr = sr)
     #     return tempo, y, sr
@@ -104,6 +107,7 @@ class Song(object):
 
     
     
+
 
 
 

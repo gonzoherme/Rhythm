@@ -2,7 +2,7 @@ from cmu_112_graphics import *
 from tkinter import *
 import time
 from backend import *
-from opencv import *
+# from opencv import *
 from random import randint
 import time
 from PIL import Image, ImageTk, ImageSequence
@@ -196,7 +196,7 @@ def appStarted(app):
     
     ########### CREATING ALL THE COUNTERS WE NEED #####################
       # Pace Counter
-    app.paceCounter = Counter('Pace: ', 1, 'lightgreen', 'black', app, 0.68)
+    app.paceCounter = Counter('Pace: ', 4, 'lightgreen', 'black', app, 0.68)
     app.paceCounter.setSize(app.width/8, app.height/20, 7*app.width/8, 1.5*app.height/12)    
 
       # Distance Counter
