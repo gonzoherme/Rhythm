@@ -10,9 +10,6 @@ from objects import *
 from random import randint
 
 
-        
-
-
 
         
 # Citation: using idea of "modes" presented in the course notes
@@ -47,7 +44,15 @@ def startMode_mousePressed(app, event):
     app.buttonToFollow.isPressed(event, app)
     if app.buttonToFollow.pressed:
         time.sleep(0.1) # delay used to simulate button friction
-        app.mode = 'followMode' 
+        app.mode = 'followMode'
+
+
+def startMode_timerFired(app): # NOT WORKING!
+    # app.timeCounter.value -= 1
+    # print(app.timeCounter.value)
+    # print('x')
+    app.spriteCounter = (1 + app.spriteCounter) % len(app.spritePhotoImages)
+    print(len(app.spritePhotoImages))
 
 ########################################################################
 
@@ -196,7 +201,7 @@ def appStarted(app):
     
     ########### CREATING ALL THE COUNTERS WE NEED #####################
       # Pace Counter
-    app.paceCounter = Counter('Pace: ', 4, 'lightgreen', 'black', app, 0.68)
+    app.paceCounter = Counter('Pace: ', 1/2, 'lightgreen', 'black', app, 0.68)
     app.paceCounter.setSize(app.width/8, app.height/20, 7*app.width/8, 1.5*app.height/12)    
 
       # Distance Counter
@@ -219,11 +224,7 @@ def appStarted(app):
     app.spritePhotoImages = loadAnimatedGif('images/green_ncs.gif')
     app.spriteCounter = 0
     
-def timerFired(app): # NOT WORKING!
-    # app.timeCounter.value -= 1
-    # print(app.timeCounter.value)
-    print('x')
-    app.spriteCounter = (1 + app.spriteCounter) % len(app.spritePhotoImages)
+
 
     
 
