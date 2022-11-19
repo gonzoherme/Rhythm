@@ -30,8 +30,6 @@ def startMode_redrawAll(app, canvas):
     app.buttonToFollow.draw(canvas)
 
 
-
-
     
 
 def startMode_mousePressed(app, event):
@@ -41,6 +39,7 @@ def startMode_mousePressed(app, event):
         time.sleep(0.1) # delay used to simulate button friction
         # play /images/buttonClicked.wav
         app.mode = 'competitiveMode'
+        app.timerDelay = 1000
 
     # Go to followMode
     app.buttonToFollow.isPressed(event, app)
@@ -49,12 +48,11 @@ def startMode_mousePressed(app, event):
         app.mode = 'followMode'
 
 
+        
+
 def startMode_timerFired(app): # NOT WORKING!
-    # app.timeCounter.value -= 1
-    # print(app.timeCounter.value)
-    # print('x')
     app.spriteCounter = (1 + app.spriteCounter) % len(app.spritePhotoImages)
-    print(len(app.spritePhotoImages))
+    # print(len(app.spritePhotoImages))
 
 ########################################################################
 
@@ -80,11 +78,12 @@ def competitiveMode_mousePressed(app, event):
     app.backButton.isPressed(event, app)
     if app.backButton.pressed:
         time.sleep(0.1) # delay used to simulate button friction
-        app.mode = 'startMode'    
+        app.mode = 'startMode'
+        app.timerDelay = 1
 
     
     # Pause
-
+    # All of this with opencv
     # Skip
 
     # Go back
@@ -101,6 +100,7 @@ def competitiveMode_mousePressed(app, event):
 def competitiveMode_keyPressed(app, event):
     # if any key is pressed, automatically highlight first song, up and down arrows will highlight next song, etc. Set boundaries for highest and lowest songs. If d is clicked "and" one of the rectangles is highlighted, i.e. slightly different color from black, then remove that song from app.playlist
     if event.key == 'Space':
+        # increase distance by whatever calculation
         print('Space')
 
     # Press enter to start playing songs
@@ -119,11 +119,33 @@ def competitiveMode_keyPressed(app, event):
         if app.paceCounter.value > 0:
             app.paceCounter.value -= 1
 
-    
+
+
+def competitiveMode_timerFired(app):
+    app.timeCounter.value -= 1
+
+            
 ########################################################################
         
-        
 
+
+
+################### INTERMEDIATE PAGE ################################
+
+def intermediateMode_redrawAll(app, canvas):
+    # Main
+    drawBackground(app, canvas, 'black')
+    app.backButton.draw(canvas)
+    
+
+
+def intermediateMode_mousePressed(app, event):
+    # If back button pressed:
+    app.backButton.isPressed(event, app)
+    if app.backButton.pressed:
+        time.sleep(0.1) # delay used to simulate button friction
+        app.mode = 'startMode'
+        app.timerDelay = 1
 
 
 
@@ -203,15 +225,15 @@ def appStarted(app):
     
     ########### CREATING ALL THE COUNTERS WE NEED #####################
       # Pace Counter
-    app.paceCounter = Counter('Pace: ', 1/2, 'lightgreen', 'black', app, 0.68)
+    app.paceCounter = Counter('Pace: ', 1, 'lightgreen', 'black', app, 0.68, '')
     app.paceCounter.setSize(app.width/8, app.height/20, 7*app.width/8, 1.5*app.height/12)    
 
       # Distance Counter
-    app.distanceCounter = Counter('Distance: ', 100, 'lightblue', 'black', app, 1)
+    app.distanceCounter = Counter('Distance: ', 0, 'lightblue', 'black', app, 1, 'm')
     app.distanceCounter.setSize(app.width/10, 1.4*app.height/18, 2.1*app.width/10, 2*app.height/18)    
 
       # Time Counter
-    app.timeCounter = Counter('Time: ', 100, 'red', 'black', app, 1)
+    app.timeCounter = Counter('Time: ', 100, 'red', 'black', app, 1, 's')
     app.timeCounter.setSize(app.width/10, app.height/18, 2*app.width/10, 1.5*app.height/18)        
     
     ##################################################################

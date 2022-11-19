@@ -3,12 +3,13 @@
 
 # Button built basing upon the button presented in Mini-Lecture Advanced Tkinter
 class Counter():
-    def __init__(self, magnitude, initValue, textColour, fill, app, magnifier):
+    def __init__(self, magnitude, initValue, textColour, fill, app, magnifier, unit):
         self.value = initValue
         self.magnitude = magnitude
         self.textColour = textColour
         self.fill = fill
         self.magnifier = magnifier
+        self.unit = unit
 
         
     def setSize(self, topLeftX, topLeftY, bottomRightX, bottomRightY):  
@@ -36,7 +37,7 @@ class Counter():
                                 fill = self.fill)
         # Draw text
         canvas.create_text(self.centerCounterX, self.centerCounterY,
-                           text = self.magnitude + f'{self.value}',
+                           text = self.magnitude + f'{self.value} {self.unit}',
                            fill = self.textColour,
                            font = f'Visby {self.fontSize} bold')
                 
