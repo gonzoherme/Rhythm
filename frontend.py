@@ -18,6 +18,10 @@ def startMode_redrawAll(app, canvas):
     drawBackground(app, canvas, 'black')
     # Title
     canvas.create_text(app.width/2, app.height/10, text = 'rhythm', font = 'Visby 100 bold', fill = 'lightgreen')
+
+    # Draw NCS gif
+    photoImage = app.spritePhotoImages[app.spriteCounter]
+    canvas.create_image(200, 200, image=photoImage)
     
     # Draw to competitive button
     app.buttonToCompetitive.draw(canvas)
@@ -25,9 +29,7 @@ def startMode_redrawAll(app, canvas):
     # Draw to follow button
     app.buttonToFollow.draw(canvas)
 
-    # Draw NCS gif
-    photoImage = app.spritePhotoImages[app.spriteCounter]
-    canvas.create_image(200, 200, image=photoImage)
+
 
 
     
@@ -175,7 +177,7 @@ def appStarted(app):
     app.timerDelay = 1
     app.mode = 'startMode'
 
-    app.playlist = getSongs() #[]
+    app.playlist = []  # getSongs()
 
     
     print(app.playlist)
