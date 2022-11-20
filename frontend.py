@@ -1,10 +1,8 @@
 from cmu_112_graphics import *
 from tkinter import *
-import time
 from backend import *
 # from opencv import *
-from random import randint
-import time
+from random import randint, shuffle
 from PIL import Image, ImageTk, ImageSequence
 from objects import *
 from random import randint
@@ -80,8 +78,10 @@ def startMode_timerFired(app): # NOT WORKING!
 
 
 def competitiveMode_redrawAll(app, canvas):
-    # Main
     drawBackground(app, canvas, 'black')
+    # Draw sky
+    canvas.create_image(100, 100, image=ImageTk.PhotoImage(app.skyImage))
+    
     app.backButton.draw(canvas)
     app.paceCounter.draw(canvas)
     app.distanceCounter.draw(canvas)
@@ -93,7 +93,11 @@ def competitiveMode_redrawAll(app, canvas):
         app.mode = 'improvementMode'
 
 
-    
+    # 3D Graphics
+    canvas.create_line(-0.05*app.width, 0.9*app.height, 0.43*app.width, 0.2*app.height, fill = 'white')
+    canvas.create_line(1.05*app.width, 0.9*app.height, 0.58*app.width, 0.2*app.height, fill = 'white')
+
+
 
 
     
@@ -144,9 +148,9 @@ def competitiveMode_keyPressed(app, event):
     if event.key == 'Enter':
         # We start to play the songs, as well as start the countdown
         app.start = True
-        # Play a random song
-        index = randint(0, len(app.playlist)-1)
-        app.playlist[index].start()
+        # Shuffle the playlist
+        shuffle(app.playlist)
+        app.playlist[0].start()
         
 
     # temporary code that will be replaced with opencv
@@ -205,22 +209,23 @@ def intermediateMode_mousePressed(app, event):
     # Go to competitive mode:
     app.intermediateToCompetitive.isPressed(event, app)
     if app.intermediateToCompetitive.pressed:
-        # Reset distance from previous session
-        if app.distanceCounter.value != 0:
-            app.distanceCounter.value = 0
+        # UNCOMMENT FOR FULL FUNCTIONALITY
+        # # Reset distance from previous session
+        # if app.distanceCounter.value != 0:
+        #     app.distanceCounter.value = 0
         
-        # Setup all the required data
-        setRequiredParameters(app)
+        # # Setup all the required data
+        # setRequiredParameters(app)
         
         time.sleep(0.1) # delay used to simulate button friction
         app.mode = 'competitiveMode'
         app.timerDelay = 1000
 
-        # Changing songs to set pace
-        for song in app.playlist:
-            song.changeTempo(app.stepsPerMinute)
+        # # Changing songs to set pace
+        # for song in app.playlist:
+        #     song.changeTempo(app.stepsPerMinute)
 
-        app.playlist = getAlteredSongs()
+        # app.playlist = getAlteredSongs()
 
         
         
@@ -322,7 +327,7 @@ def congratulationsMode_mousePressed(app, event):
 def appStarted(app):
     app.start = False
     app.margin = 0
-    app.mode = 'startMode'
+    app.mode = 'competitiveMode'
 
     app.playlist = getOriginalSongs()
 
@@ -330,7 +335,9 @@ def appStarted(app):
     app.spritePhotoImages = loadAnimatedGif('images/green_ncs.gif')
     app.spriteCounter = 0
     app.timerDelay = 40
-    
+
+    # Loading image of sky
+    app.skyImage = app.loadImage('images/sky.jpg')
 
     
     ########### CREATING ALL THE BUTTONS WE NEED #####################
@@ -358,7 +365,7 @@ def appStarted(app):
     
     ########### CREATING ALL THE COUNTERS WE NEED #####################
       # Pace Counter
-    app.paceCounter = Counter('Pace: ', 1, 'lightgreen', 'black', app, 0.68, '')
+    app.paceCounter = Counter('Pace: ', 1, 'lightgreen', 'lightblue', app, 0.68, '')
     app.paceCounter.setSize(app.width/8, app.height/20, 7*app.width/8, 1.5*app.height/12)    
 
       # Distance Counter
@@ -402,4 +409,4 @@ def appStarted(app):
 
 ####################################################################################################
     
-runApp(width = 700, height = 800)
+runApp(width = 1160, height = 800)

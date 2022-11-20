@@ -6,8 +6,10 @@ from scipy.io import wavfile
 from tkinter import *
 import subprocess, threading, time
 
-
-
+#CITATIONS
+# Music citation: all .wav files obtained from https://pixabay.com/music/search/wav/
+# Gif citation: https://giphy.com/nocopyrightsounds
+# Sky image citation: https://www.google.com/search?q=png+sky&source=lnms&tbm=isch&sa=X&ved=2ahUKEwj_8pLyzb37AhXcElkFHXeiDQQQ_AUoAXoECAIQAw&biw=1440&bih=800&dpr=2#imgrc=tEtK2gCdyG43YM
 
 # Song playlist initialization
 def getOriginalSongs():
