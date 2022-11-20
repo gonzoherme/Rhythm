@@ -10,33 +10,45 @@ import subprocess, threading, time
 
 
 # Song playlist initialization
-def getSongs():
-    dir_path = r'/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/songs'
+def getOriginalSongs():
+    dir_path = r'/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/songs/originals'
     file_names = os.listdir(dir_path) # list file and directories
-    file_names.remove('.DS_Store') # remove mac os file
+    # try to remove .DS_Store default mac file if there
+    try:
+        file_names.remove('.DS_Store') # remove mac os file
+    except Exception:
+        pass
 
     playlist = [ ]
     for song in file_names:
         # only get name of song, remove '.wav' ending
         name = song[:-4]
-        name = Song('songs/'+ song)
+        name = Song('songs/originals/'+ song)
         playlist.append(name)
     return playlist
 
 
+def getAlteredSongs():
+    dir_path = r'/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/songs/altered'
+    file_names = os.listdir(dir_path) # list file and directories
+    # try to remove .DS_Store default mac file if there
+    try:
+        file_names.remove('.DS_Store') # remove mac os file
+    except Exception:
+        pass
 
-# Gif playing: code obtained directly from 112 notes Advanced Tkinter
-def loadAnimatedGif(path):
-    # load first sprite outside of try/except to raise file-related exceptions
-    spritePhotoImages = [ PhotoImage(file=path, format='gif -index 0') ]
-    i = 1
-    while True:
-        try:
-            spritePhotoImages.append(PhotoImage(file=path,
-                                                format=f'gif -index {i}'))
-            i += 1
-        except Exception as e:
-            return spritePhotoImages
+    playlist = [ ]
+    for song in file_names:
+        # only get name of song, remove '.wav' ending
+        name = song[:-4]
+        name = Song('songs/altered/'+ song)
+        playlist.append(name)
+    return playlist
+#####################################################
+
+
+
+
 
 
 
@@ -56,12 +68,12 @@ class Song(object):
         self.y, self.sr = librosa.load(self.path)
         self.tempo, self.beat_frames = librosa.beat.beat_track(y = self.y, sr = self.sr)
         print(self.tempo)
-
         
 
     def isPlaying(self):
         return (self.process is not None)
 
+    
     def checkProcess(self):
         # This method is run inside a separate thread
         # so the main thread does not hang while this runs.
@@ -80,6 +92,7 @@ class Song(object):
         self.process = subprocess.Popen(['afplay', self.path])  
         threading.Thread(target=self.checkProcess).start()
 
+        
     def stop(self):
         process = self.process
         self.loop = False
@@ -88,13 +101,6 @@ class Song(object):
             try: process.kill()
             except: pass
 
-    # def getBPM(self):
-    #     
-    #     
-    #     y, sr = librosa.load(self.path)
-    #     tempo, beat_frames = librosa.beat.beat_track(y = y, sr = sr)
-    #     return tempo, y, sr
-
 
     # ratio we multiply the tempo by
     def changeTempo(self, ratio):
@@ -102,35 +108,40 @@ class Song(object):
         #sr is the sample rate (number of samples per second)
         # y, sr = librosa.load('songs/' + filename)
         
-        # replace old audio file with new created one
-        wavfile.write(self.path, int(ratio*self.sr), self.y)
+        path = self.path.replace('originals', 'altered') # non-destructive, doesn't affect self.path
+        # create temporary file
+        wavfile.write(path, int(ratio*self.sr), self.y)
 
+#################################################################3
+
+
+
+# PLAYING GIFS
+# Gif playing: code obtained directly from 112 notes Advanced Tkinter
+# def loadAnimatedGif(path):
+#     # load first sprite outside of try/except to raise file-related exceptions
+#     spritePhotoImages = [ PhotoImage(file=path, format='gif -index 0') ]
+#     i = 1
+#     while True:
+#         try:
+#             spritePhotoImages.append(PhotoImage(file=path,
+#                                                 format=f'gif -index {i}'))
+#             i += 1
+#         except Exception as e:
+#             return spritePhotoImages
+
+
+############ Pace calculator
+# Citation to calculate person's stride from their height:
+#https://www.scientificamerican.com/article/bring-science-home-estimating-height-walk/
+def calculatePace(app):
+    distanceMeters = app.distanceTextBox[9:] # In meters!!
+    heightMeters = app.heightTextBox[7: ]  # In meters!!
+    timeMinutes = app.timeTextBox[5: ] # In minutes!!
+    strideMeters = height * 0.42
+
+    numberSteps = int(distanceMeters/strideMeters)
+    stepsPerMinute = int(timeMinutes / numberSteps)
+            
+    return stepsPerMinute
     
-    
-
-
-
-
-## Ideas:
-# Top Down design: the first thing I need to write is simply the program that gets a song and increases or decreases its rythm
-
-# We need to create a folder in which to store the mp3 files that the user uploads, and keep the right order. We can also display a queue on screen that the user can edit. The order of the files in the folder doesn't matter, what matters is a list that we have with the order of songs queued, with each item the name of the title of each mp3
-
-
-
-
-
-
-
-
- 
-    
-    
-                  
-# playlist = getSongs()
-# print(playlist)
-
-# changeTempo('sample.wav', 4, playlist['sample.wav'][1], playlist['sample.wav'][2])
-
-
-

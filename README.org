@@ -4,9 +4,8 @@ _LEARNED FROM MEETING_
  - With OpenCV, you code a slider for speed, move with finger. Right faster, left slower.
  
 
-_SUPER IMPORTANT_: I won't be getting points for the librosa stuff. So make sure the project is sufficiently algorithmically complex!!! Make a multiplayer where people's running is updated, and shows on screen!!
 
----> Make it like game like!!! In competitive, add a screen where you can see two people running from above, you and the AI, going at the rhythm you selected. If you click start, it starts !!! No need to update the speed of the songs real-time anymore!!! Draw sprites going around a round track, and your spacebar presses should move them proportionally to a step in real-life. Every like 8 seconds put on screen a message that fades in and out (advanced graphics) like: u got this!, keep running! The user enters distance and time. At the end, have two possible screen modes, congrats made it (effect of like georgia tech accepted page things stars falling around), or great effort, keep working.
+Possibility: competitive, add a screen where you can see two people running from above, you and the AI, going at the rhythm you selected. If you click start, it starts !!! No need to update the speed of the songs real-time anymore!!! Draw sprites going around a round track, and your spacebar presses should move them proportionally to a step in real-life. Every like 8 seconds put on screen a message that fades in and out (advanced graphics) like: u got this!, keep running! The user enters distance and time. At the end, have two possible screen modes, congrats made it (effect of like georgia tech accepted page things stars falling around), or great effort, keep working.
 
 
  

@@ -1,9 +1,9 @@
 from cmu_112_graphics import *
 
 def appStarted(app):
-    app.timerDelay = 1000
     app.spritePhotoImages = loadAnimatedGif('images/green_ncs.gif')
     app.spriteCounter = 0
+    app.timerDelay = 40
 
 def loadAnimatedGif(path):
     # load first sprite outside of try/except to raise file-related exceptions
@@ -23,5 +23,6 @@ def timerFired(app):
 def redrawAll(app, canvas):
     photoImage = app.spritePhotoImages[app.spriteCounter]
     canvas.create_image(200, 200, image=photoImage)
+
 
 runApp(width=400, height=400)
