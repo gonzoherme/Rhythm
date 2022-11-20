@@ -161,6 +161,7 @@ class TextBox():
         canvas.create_text(self.centerButtonX, self.centerButtonY,
                            text = self.text,
                            fill = self.textColour,
-                           font = f'Visby {self.fontSize} bold')                
+                           font = f'Visby {self.fontSize} bold')
+
 
 ###########################################################################        

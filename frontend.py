@@ -87,6 +87,11 @@ def competitiveMode_redrawAll(app, canvas):
     app.distanceCounter.draw(canvas)
     app.timeCounter.draw(canvas)
 
+    # Check if runner done
+    if app.timeCounter.value == 0 and app.distanceCounter.value < app.distanceMeters:
+        # did not make the objective
+        app.mode = 'improvementMode'
+
 
     
 
@@ -119,11 +124,26 @@ def competitiveMode_mousePressed(app, event):
 def competitiveMode_keyPressed(app, event):
     # if any key is pressed, automatically highlight first song, up and down arrows will highlight next song, etc. Set boundaries for highest and lowest songs. If d is clicked "and" one of the rectangles is highlighted, i.e. slightly different color from black, then remove that song from app.playlist
     if event.key == 'Space':
+        #convert back to float
+        app.distanceCounter.value = float(app.distanceCounter.value)
         # increase distance by whatever calculation
-        print('Space')
+        app.distanceCounter.value += app.strideMeters
+        # make sure only displays two decimals        
+        app.distanceCounter.value = reduceDecimals(app.distanceCounter.value)
+
+        
+        # check if full distance reached
+        if float(app.distanceCounter.value) >= app.distanceMeters:
+            # Congrats!
+            app.mode = 'congratulationsMode'
+            resetAll(app)
+            
+        
 
     # Press enter to start playing songs
     if event.key == 'Enter':
+        # We start to play the songs, as well as start the countdown
+        app.start = True
         # Play a random song
         index = randint(0, len(app.playlist)-1)
         app.playlist[index].start()
@@ -149,7 +169,8 @@ def competitiveMode_keyPressed(app, event):
 
             
 def competitiveMode_timerFired(app):
-    app.timeCounter.value -= 1
+    if app.start == True:
+        app.timeCounter.value -= 1
 
             
 ########################################################################
@@ -172,37 +193,55 @@ def intermediateMode_redrawAll(app, canvas):
     canvas.create_text(app.width/2, app.height/10, text = "Today's goals: ", font = 'Visby 60 bold', fill = 'lightgreen')
     
     # Draw textBox for Goal Distance
-    # app.distanceTextBox.draw(canvas)
-    # app.heightTextBox.draw(canvas)
+    app.timeTextBox.draw(canvas)
+    app.distanceTextBox.draw(canvas)
+    app.heightTextBox.draw(canvas)
 
 
 
-
-    
 
 
 def intermediateMode_mousePressed(app, event):        
     # Go to competitive mode:
     app.intermediateToCompetitive.isPressed(event, app)
     if app.intermediateToCompetitive.pressed:
+        # Reset distance from previous session
+        if app.distanceCounter.value != 0:
+            app.distanceCounter.value = 0
+        
+        # Setup all the required data
+        setRequiredParameters(app)
+        
         time.sleep(0.1) # delay used to simulate button friction
         app.mode = 'competitiveMode'
         app.timerDelay = 1000
 
-        # Setup adequate pace
-        app.pace = calculatePace(app)
+        # Changing songs to set pace
+        for song in app.playlist:
+            song.changeTempo(app.stepsPerMinute)
 
+        app.playlist = getAlteredSongs()
 
         
-    # Input text if text box clicked
+        
+    # Input text if any of the text boxes are clicked
     app.distanceTextBox.isPressed(event, app)
     if app.distanceTextBox.pressed:
         time.sleep(0.1) # delay used to simulate button friction
         app.currentTextBox = app.distanceTextBox # creating an alias on purpose
         
 
-
+    app.timeTextBox.isPressed(event, app)
+    if app.timeTextBox.pressed:
+        time.sleep(0.1) # delay used to simulate button friction
+        app.currentTextBox = app.timeTextBox # creating an alias on purpose
         
+    app.heightTextBox.isPressed(event, app)
+    if app.heightTextBox.pressed:
+        time.sleep(0.1) # delay used to simulate button friction
+        app.currentTextBox = app.heightTextBox # creating an alias on purpose\
+
+
         
 def intermediateMode_keyPressed(app, event):
     if event.key != 'Enter' and hasattr(app, 'currentTextBox'): #making sure app has currentTextBox attribute
@@ -250,15 +289,30 @@ def followMode_mousePressed(app, event):
 
 
 
-########## VIEW ##################
-def drawBackground(app, canvas, fill):
-    canvas.create_rectangle(app.margin, app.margin, app.width - app.margin, app.height - app.margin, fill = fill, outline = 'black', width = 25)
-##################################
+
+######################### CONGRATULATIONS MODE ########################
+
+def congratulationsMode_redrawAll(app, canvas):
+    # Main
+    drawBackground(app, canvas, 'black')
+    app.backButton.draw(canvas)
+
+    # Draw Title:
+    canvas.create_text(app.width/2, app.height/2, text = "Congratulations!!! \n You achieved\n your goal!", font = 'Visby 60 bold', fill = 'lightgreen')
 
 
 
 
 
+def congratulationsMode_mousePressed(app, event):        
+    # If back button pressed:
+    app.backButton.isPressed(event, app)
+    if app.backButton.pressed:
+        time.sleep(0.1) # delay used to simulate button friction
+        app.mode = 'startMode' 
+
+
+#######################################################################
 
     
 
@@ -266,19 +320,17 @@ def drawBackground(app, canvas, fill):
 
 #################################### MAIN APP #####################################
 def appStarted(app):
+    app.start = False
     app.margin = 0
     app.mode = 'startMode'
 
     app.playlist = getOriginalSongs()
-    print(app.playlist)
 
     # Loading gif
     app.spritePhotoImages = loadAnimatedGif('images/green_ncs.gif')
     app.spriteCounter = 0
     app.timerDelay = 40
-
     
-    # print(app.playlist)
 
     
     ########### CREATING ALL THE BUTTONS WE NEED #####################
@@ -321,25 +373,25 @@ def appStarted(app):
 
 
     ################### CREATING ALL THE TEXTBOXES ##################
-    app.distanceTextBox = TextBox(app, "Distance goal: ", 1, 'lightblue', 'black')
-    app.distanceTextBox.setSize(app.width/20, app.height/3.5, 10*app.width/20, 1.5*app.height/3.5)
+    app.distanceTextBox = TextBox(app, "Distance goal: ", 0.7, 'lightblue', 'black')
+    app.distanceTextBox.setSize(1.5*app.width/20, app.height/3.5, 1.5*10*app.width/20, 1.5*app.height/3.5)
 
     
-    app.timeTextBox = TextBox(app, "Time goal: ", 1, 'lightyellow', 'black')
-    app.timeTextBox.setSize(app.width/20, app.height/3.5, 10*app.width/20, 1.5*app.height/3.5)
+    app.timeTextBox = TextBox(app, "Time goal: ", 0.7, 'lightyellow', 'black')
+    app.timeTextBox.setSize(1.5*app.width/20, 1.5*app.height/3.5, 1.5*10*app.width/20, 1.4*1.5*app.height/3.5)
 
-    app.timeTextBox = TextBox(app, "Height: ", 1, 'lightyellow', 'black')
-    app.timeTextBox.setSize(app.width/20, app.height/3.5, 10*app.width/20, 1.5*app.height/3.5)    
+    app.heightTextBox = TextBox(app, "Height: ", 0.7, 'lightgreen', 'black')
+    app.heightTextBox.setSize(1.5*app.width/20, 2.2*app.height/3.5, 1.5*10*app.width/20, 1.6*1.5*app.height/3.5)    
     ################################################################
 
     
 
 
-    # Changing pace to adequate pace
-    for song in app.playlist:
-        song.changeTempo(app.paceCounter.value)
-    # Setting all songs to initial altered tempo
-    app.playlist = getAlteredSongs()
+    # # Changing pace to adequate pace
+    # for song in app.playlist:
+    #     song.changeTempo(100)
+    # # Setting all songs to initial altered tempo
+    # app.playlist = getAlteredSongs()
 
 
 

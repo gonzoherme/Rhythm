@@ -67,7 +67,7 @@ class Song(object):
         # sr is the sample rate (number of samples per second)
         self.y, self.sr = librosa.load(self.path)
         self.tempo, self.beat_frames = librosa.beat.beat_track(y = self.y, sr = self.sr)
-        print(self.tempo)
+
         
 
     def isPlaying(self):
@@ -103,11 +103,15 @@ class Song(object):
 
 
     # ratio we multiply the tempo by
-    def changeTempo(self, ratio):
+    def changeTempo(self, desiredBPM):
         # y is the time series: the audio signal represented as a one-dimensional numpy.ndarray
         #sr is the sample rate (number of samples per second)
         # y, sr = librosa.load('songs/' + filename)
-        
+
+        # ratio we want to multiply by:
+        ratio = desiredBPM / self.tempo
+
+        # create copies of original songs but altered in a different directory
         path = self.path.replace('originals', 'altered') # non-destructive, doesn't affect self.path
         # create temporary file
         wavfile.write(path, int(ratio*self.sr), self.y)
@@ -134,14 +138,47 @@ class Song(object):
 ############ Pace calculator
 # Citation to calculate person's stride from their height:
 #https://www.scientificamerican.com/article/bring-science-home-estimating-height-walk/
-def calculatePace(app):
-    distanceMeters = app.distanceTextBox[9:] # In meters!!
-    heightMeters = app.heightTextBox[7: ]  # In meters!!
-    timeMinutes = app.timeTextBox[5: ] # In minutes!!
-    strideMeters = height * 0.42
+def setRequiredParameters(app):
+    app.distanceMeters = float(app.distanceTextBox.text[15:]) # In meters!!
+    app.timeMinutes = int(app.timeTextBox.text[11: ]) # In minutes!!
+    app.heightMeters = float(app.heightTextBox.text[8: ])  # In meters!!
 
-    numberSteps = int(distanceMeters/strideMeters)
-    stepsPerMinute = int(timeMinutes / numberSteps)
-            
-    return stepsPerMinute
+    app.timeCounter.value = app.timeMinutes*60
+    app.strideMeters = app.heightMeters * 0.42
+
+    numberSteps = int(app.distanceMeters/app.strideMeters)
+
+    app.stepsPerMinute = int(numberSteps / app.timeMinutes)
+
+    # rightFootStepsPerMinute = int(stepsPerMinute/2)
+    app.paceCounter.value = app.stepsPerMinute
+
+
+
     
+
+# Only display two decimals
+def reduceDecimals(val):
+    string = str(val)
+    dotIndex = string.index('.')
+    string = string[ : dotIndex+3]
+
+    # add decimal 0 to end of number if only one decimal point
+    newDotIndex = string.index('.')
+
+    if len(string[newDotIndex:]) < 3:
+        string += '0'
+
+    return string
+    
+
+## Drawing background function
+def drawBackground(app, canvas, fill):
+    canvas.create_rectangle(app.margin, app.margin, app.width - app.margin, app.height - app.margin, fill = fill, outline = 'black', width = 25)
+
+
+# Reset all
+def resetAll(app):
+    app.distanceTextBox.text = "Distance goal: "
+    app.timeTextBox.text = "Time goal: "
+    app.heightTextBox.text = "Height: "
