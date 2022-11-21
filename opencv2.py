@@ -1,6 +1,9 @@
-# Tutorial on how to get started setting up hand-tracking in opencv: https://www.section.io/engineering-education/creating-a-hand-tracking-module/#prerequisites
+# Documentation used to learn about opencv and mediapipe:
 
 # Mediapipe handtracking documentation: https://google.github.io/mediapipe/solutions/hands.html
+# Blog on on how to get started setting up hand-tracking in opencv: https://www.section.io/engineering-education/creating-a-hand-tracking-module/#prerequisites
+
+
 
 import cv2
 import mediapipe as mp

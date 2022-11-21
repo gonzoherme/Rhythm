@@ -30,7 +30,7 @@ def startMode_redrawAll(app, canvas):
 
     drawBackground(app, canvas, 'black')
     # Title
-    canvas.create_text(app.width/2, app.height/10, text = 'rhythm', font = 'Visby 100 bold', fill = 'lightgreen')
+    canvas.create_text(app.width/2, app.height/10, text = 'rhythm', font = 'Visby 100 bold', fill = 'lightblue')
 
 
     
@@ -43,7 +43,8 @@ def startMode_redrawAll(app, canvas):
 
     # Draw NCS gif
     photoImage = app.spritePhotoImages[app.spriteCounter]
-    canvas.create_image(200, 200, image=photoImage)
+    # photoImage = app.scaleImage(photoImage, 0.5)
+    canvas.create_image(app.width/2, 0.9 *app.height/2, image=photoImage)
     
     
 
@@ -107,7 +108,7 @@ def competitiveMode_mousePressed(app, event):
     if app.backButton.pressed:
         time.sleep(0.1) # delay used to simulate button friction
         app.mode = 'startMode'
-        app.timerDelay = 1
+        app.timerDelay = 20
 
     
     # Pause
@@ -145,7 +146,7 @@ def competitiveMode_keyPressed(app, event):
         
 
     # Press enter to start playing songs
-    if event.key == 'Enter':
+    if event.key == 'Enter' or event.key == 'Return':
         # We start to play the songs, as well as start the countdown
         app.start = True
         # Shuffle the playlist
@@ -210,22 +211,22 @@ def intermediateMode_mousePressed(app, event):
     app.intermediateToCompetitive.isPressed(event, app)
     if app.intermediateToCompetitive.pressed:
         # UNCOMMENT FOR FULL FUNCTIONALITY
-        # # Reset distance from previous session
-        # if app.distanceCounter.value != 0:
-        #     app.distanceCounter.value = 0
+        # Reset distance from previous session
+        if app.distanceCounter.value != 0:
+            app.distanceCounter.value = 0
         
-        # # Setup all the required data
-        # setRequiredParameters(app)
+        # Setup all the required data
+        setRequiredParameters(app)
         
         time.sleep(0.1) # delay used to simulate button friction
         app.mode = 'competitiveMode'
         app.timerDelay = 1000
 
-        # # Changing songs to set pace
-        # for song in app.playlist:
-        #     song.changeTempo(app.stepsPerMinute)
+        # Changing songs to set pace
+        for song in app.playlist:
+            song.changeTempo(app.stepsPerMinute)
 
-        # app.playlist = getAlteredSongs()
+        app.playlist = getAlteredSongs()
 
         
         
@@ -252,7 +253,8 @@ def intermediateMode_keyPressed(app, event):
     if event.key != 'Enter' and hasattr(app, 'currentTextBox'): #making sure app has currentTextBox attribute
         if event.key == 'Space':
             app.currentTextBox.text += ' '
-        elif event.key == 'Delete' and app.currentTextBox.text[-1] != ':' : # making sure user can't delete full text box
+        elif ((event.key == 'Delete' or event.key == 'BackSpace')
+              and app.currentTextBox.text[-1] != ':') : # making sure user can't delete full text box
             app.currentTextBox.text = app.currentTextBox.text[:-1]
         else:
             app.currentTextBox.text += event.key
@@ -327,14 +329,15 @@ def congratulationsMode_mousePressed(app, event):
 def appStarted(app):
     app.start = False
     app.margin = 0
-    app.mode = 'competitiveMode'
+    app.mode = 'startMode'
 
     app.playlist = getOriginalSongs()
 
     # Loading gif
-    app.spritePhotoImages = loadAnimatedGif('images/green_ncs.gif')
+    app.spritePhotoImages = loadAnimatedGif('images/blue_ncs.gif')
     app.spriteCounter = 0
-    app.timerDelay = 40
+    app.timerDelay = 10
+
 
     # Loading image of sky
     app.skyImage = app.loadImage('images/sky.jpg')
@@ -342,24 +345,23 @@ def appStarted(app):
     
     ########### CREATING ALL THE BUTTONS WE NEED #####################
       # Button to competitive
-    app.buttonToCompetitive = Button('competitive', 1, app, 'white', 'blue')
-    app.buttonToCompetitive.setSize(app.width/8, app.height/3.5, 7*app.width/8, 1.5*app.height/3.5)
+    app.buttonToCompetitive = Button('Set Goal', 0.7, app, 'white', 'lightblue')
+    app.buttonToCompetitive.setSize(1.5*app.width/8, app.height/1.3, 3.6*app.width/8, 1.2*app.height/1.3)
 
       # Button to follow
-    app.buttonToFollow = Button('follow', 1, app, 'white', 'blue')
-    app.buttonToFollow.setSize(app.width/8, app.height/3.5 + 1.2*app.height/5, 7*app.width/8, 1.5*app.height/3.5  + 1.2*app.height/5)
+    app.buttonToFollow = Button('Adaptive', 0.32, app, 'white', 'lightblue')
+    app.buttonToFollow.setSize(4.5*app.width/8, app.height/1.3, 6.5*app.width/8, 1.2*app.height/1.3)
     
       # Button to back
-    app.backButton = Button('BACK', 0.3, app, 'white', 'black')
-    app.backButton.setSize(0.8*app.width, 0.9*app.height, 0.9*app.width, 0.95*app.height)
+    app.backButton = Button('BACK', 0.2, app, 'white', 'black')
+    app.backButton.setSize(0.88*app.width, 0.93*app.height, 0.96*app.width, 0.96*app.height)
 
       # Button intermediate to competitive
-    app.intermediateToCompetitive = Button('NEXT', 0.3, app, 'white', 'black')
-    app.intermediateToCompetitive.setSize(0.8*app.width, 0.9*app.height, 0.9*app.width, 0.95*app.height)
+    app.intermediateToCompetitive = Button('NEXT', 0.2, app, 'white', 'black')
+    app.intermediateToCompetitive.setSize(0.88*app.width, 0.93*app.height, 0.96*app.width, 0.96*app.height)
 
       
     ##################################################################
-
 
     
     

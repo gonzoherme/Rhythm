@@ -139,14 +139,14 @@ class Song(object):
 
 ############ Pace calculator
 # Citation to calculate person's stride from their height:
-#https://www.scientificamerican.com/article/bring-science-home-estimating-height-walk/
+# https://www.livestrong.com/article/438560-the-average-stride-length-in-running/
 def setRequiredParameters(app):
     app.distanceMeters = float(app.distanceTextBox.text[15:]) # In meters!!
     app.timeMinutes = int(app.timeTextBox.text[11: ]) # In minutes!!
     app.heightMeters = float(app.heightTextBox.text[8: ])  # In meters!!
 
     app.timeCounter.value = app.timeMinutes*60
-    app.strideMeters = app.heightMeters * 0.42
+    app.strideMeters = app.heightMeters * 1.17
 
     numberSteps = int(app.distanceMeters/app.strideMeters)
 

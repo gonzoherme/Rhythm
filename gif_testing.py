@@ -1,3 +1,8 @@
+import sys
+print('--------------')
+print(sys.executable)
+print('----------------')
+
 from cmu_112_graphics import *
 
 def appStarted(app):
