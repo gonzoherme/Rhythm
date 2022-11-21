@@ -165,3 +165,28 @@ class TextBox():
 
 
 ###########################################################################        
+
+
+########################## GRAPHICS CLASSES ###############################
+class Road():
+    def __init__(self, fill, edgeColour):
+        self.fill = fill
+        self.edgeColour = edgeColour
+
+
+    def setSize(self, bottomLeftX, bottomLeftY, bottomRightX, bottomRightY):
+        self.bottomLeftX = bottomLeftX
+        self.bottomLeftY = bottomLeftY
+        self.bottomRightX = bottomRightX
+        self.bottomRightY = bottomRightY
+
+        
+    def draw(self, canvas):
+        # draw lines connecting both points
+        canvas.create_line(self.bottomLeftX, self.bottomLeftY, self.bottomRightX,
+                           self.bottomRightY, fill = self.edgeColour)
+
+
+    
+
+    
