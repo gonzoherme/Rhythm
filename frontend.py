@@ -8,19 +8,6 @@ from objects import *
 from random import randint
 
 
-
-def loadAnimatedGif(path):
-    # load first sprite outside of try/except to raise file-related exceptions
-    spritePhotoImages = [ PhotoImage(file=path, format='gif -index 0') ]
-    i = 1
-    while True:
-        try:
-            spritePhotoImages.append(PhotoImage(file=path,
-                                                format=f'gif -index {i}'))
-            i += 1
-        except Exception as e:
-            return spritePhotoImages
-
         
         
         
@@ -119,21 +106,16 @@ def competitiveMode_mousePressed(app, event):
     
     # Pause
     # All of this with opencv
+    
     # Skip
 
     # Go back
 
     # Increase / Decrease pace
 
-        # Substitute all files with changed paced ones
-        # The only tempo we keep is the original song tempo, because all changes in pace will be done relative to that one
-        # for song in app.playlist:
-        #     changeTempo(song[1], song[0], app.pace)
-
         
 
 def competitiveMode_keyPressed(app, event):
-    # if any key is pressed, automatically highlight first song, up and down arrows will highlight next song, etc. Set boundaries for highest and lowest songs. If d is clicked "and" one of the rectangles is highlighted, i.e. slightly different color from black, then remove that song from app.playlist
     if event.key == 'Space':
         #convert back to float
         app.distanceCounter.value = float(app.distanceCounter.value)
@@ -155,9 +137,14 @@ def competitiveMode_keyPressed(app, event):
     if event.key == 'Enter' or event.key == 'Return':
         # We start to play the songs, as well as start the countdown
         app.start = True
+
+        # Play our playlist
         # Shuffle the playlist
         shuffle(app.playlist)
+        c = 0
         app.playlist[0].start()
+        #play next song if P
+        
         
 
     # temporary code that will be replaced with opencv
@@ -355,7 +342,7 @@ def congratulationsMode_mousePressed(app, event):
 def appStarted(app):
     app.start = False
     app.margin = 0
-    app.mode = 'competitiveMode'
+    app.mode = 'startMode'
 
     app.playlist = getOriginalSongs()
 

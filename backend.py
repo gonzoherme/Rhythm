@@ -122,21 +122,6 @@ class Song(object):
 
 
 
-# PLAYING GIFS
-# Gif playing: code obtained directly from 112 notes Advanced Tkinter
-# def loadAnimatedGif(path):
-#     # load first sprite outside of try/except to raise file-related exceptions
-#     spritePhotoImages = [ PhotoImage(file=path, format='gif -index 0') ]
-#     i = 1
-#     while True:
-#         try:
-#             spritePhotoImages.append(PhotoImage(file=path,
-#                                                 format=f'gif -index {i}'))
-#             i += 1
-#         except Exception as e:
-#             return spritePhotoImages
-
-
 ############ Pace calculator
 # Citation to calculate person's stride from their height:
 # https://www.livestrong.com/article/438560-the-average-stride-length-in-running/
@@ -155,10 +140,24 @@ def setRequiredParameters(app):
     # rightFootStepsPerMinute = int(stepsPerMinute/2)
     app.paceCounter.value = app.stepsPerMinute
 
+ 
+
+## Load Animated Gif
+def loadAnimatedGif(path):
+    # load first sprite outside of try/except to raise file-related exceptions
+    spritePhotoImages = [ PhotoImage(file=path, format='gif -index 0') ]
+    i = 1
+    while True:
+        try:
+            spritePhotoImages.append(PhotoImage(file=path,
+                                                format=f'gif -index {i}'))
+            i += 1
+        except Exception as e:
+            return spritePhotoImages
+
 
 
     
-
 # Only display two decimals
 def reduceDecimals(val):
     string = str(val)
@@ -184,3 +183,5 @@ def resetAll(app):
     app.distanceTextBox.text = "Distance goal: "
     app.timeTextBox.text = "Time goal: "
     app.heightTextBox.text = "Height: "
+
+
