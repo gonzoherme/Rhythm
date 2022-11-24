@@ -108,13 +108,6 @@ class Button():
 
 
 
-     
-
-
-
-
-
-
 
 ######################### TEXT BOX ######################################
 class TextBox():        
@@ -167,11 +160,12 @@ class TextBox():
 ###########################################################################        
 
 
+
 ########################## GRAPHICS CLASSES ###############################
-class Road():
-    def __init__(self, fill, edgeColour):
+class Road(): #make a polygon, like triangle-like!!! Not two lines
+    def __init__(self, fill, outlineColor):
         self.fill = fill
-        self.edgeColour = edgeColour
+        self.outlineColor = outlineColor
 
 
     def setSize(self, bottomLeftX, bottomLeftY, bottomRightX, bottomRightY):
@@ -181,10 +175,12 @@ class Road():
         self.bottomRightY = bottomRightY
 
         
-    def draw(self, canvas):
+    def draw(self, app, canvas):
         # draw lines connecting both points
-        canvas.create_line(self.bottomLeftX, self.bottomLeftY, self.bottomRightX,
-                           self.bottomRightY, fill = self.edgeColour)
+        canvas.create_polygon(self.bottomLeftX, self.bottomLeftY, app.cx,
+                              app.cy, self.bottomRightX, self.bottomRightY,
+                              outline = self.outlineColor,
+                              fill = self.fill)
 
 
     

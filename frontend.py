@@ -68,6 +68,10 @@ def startMode_timerFired(app): # NOT WORKING!
 
 def competitiveMode_redrawAll(app, canvas):
     drawBackground(app, canvas, 'black')
+
+    app.road.draw(app, canvas)
+
+    
     # Draw sky
     canvas.create_image(app.width/2, -app.height/10, image=ImageTk.PhotoImage(app.skyImage))
 
@@ -83,14 +87,6 @@ def competitiveMode_redrawAll(app, canvas):
         app.mode = 'improvementMode'
 
 
-    # 3D Graphics
-    # WORK ON THE ROAD CLASS, MAYBE THE MAIN POV CLASS
-    canvas.create_line(-0.05*app.width, 0.9*app.height,
-                       0.43*app.width, 0.2*app.height, fill = 'white')
-
-    canvas.create_line(1.05*app.width, 0.9*app.height,
-                       0.58*app.width, 0.2*app.height, fill = 'white')
-
 
 
 
@@ -103,15 +99,8 @@ def competitiveMode_mousePressed(app, event):
         app.mode = 'startMode'
         app.timerDelay = 20
 
-    
-    # Pause
-    # All of this with opencv
-    
-    # Skip
-
-    # Go back
-
-    # Increase / Decrease pace
+    # All of this with opencv    
+    # Pause, skip, back, increase / decrease pace
 
         
 
@@ -342,7 +331,10 @@ def congratulationsMode_mousePressed(app, event):
 def appStarted(app):
     app.start = False
     app.margin = 0
-    app.mode = 'startMode'
+    app.cx = app.width/2 # x of point 3D graphics point to
+    app.cy = (app.height/4) # y of point 3D graphics point to
+    app.mode = 'competitiveMode'
+    
 
     app.playlist = getOriginalSongs()
 
@@ -356,6 +348,7 @@ def appStarted(app):
     app.skyImage = app.loadImage('images/sky.jpg')
     app.skyImage = app.scaleImage(app.skyImage, 2) # rescale
 
+    
     
     ########### CREATING ALL THE BUTTONS WE NEED #####################
       # Button to competitive
@@ -417,14 +410,13 @@ def appStarted(app):
                               1.5*10*app.width/20, 1.6*1.5*app.height/3.5)    
     ################################################################
 
-    # # Changing pace to adequate pace
-    # for song in app.playlist:
-    #     song.changeTempo(100)
-    # # Setting all songs to initial altered tempo
-    # app.playlist = getAlteredSongs()
 
+
+    # Create 3D graphics
+    app.road = Road('gray', 'white')
+    app.road.setSize(0.1*app.width, 1*app.height, 0.9*app.width, 1*app.height)
     
 
-################################################################################################
+
     
 runApp(width = 1160, height = 800)
