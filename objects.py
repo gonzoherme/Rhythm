@@ -1,5 +1,5 @@
 from math import sqrt
-
+from random import randint
 ######################### COUNTERS ##############################
 
 # Button built basing upon the button presented in Mini-Lecture Advanced Tkinter
@@ -248,9 +248,9 @@ class roadDash():
                               fill = self.fill,
                               width = 0)
         
-        canvas.create_oval(self.x1 + 5, self.y1+5,
-                           self.x1-5, self.y1-5,
-                           fill =  'red')
+        # canvas.create_oval(self.x1 + 5, self.y1+5,
+        #                    self.x1-5, self.y1-5,
+        #                    fill =  'red')
 
 
 
@@ -375,9 +375,9 @@ class LeftBuilding():
                               width = 0)
 
 
-        canvas.create_oval(self.x0 + 5, self.y0+5,
-                           self.x0-5, self.y0-5,
-                           fill =  'red')
+        # canvas.create_oval(self.x0 + 5, self.y0+5,
+        #                    self.x0-5, self.y0-5,
+        #                    fill =  'red')
         
 
 
@@ -482,6 +482,9 @@ class RightBuilding():
 
 
         
+        # Set fill to be random color?
+        # self.fill = app.colors[]
+        
     def draw(self, app, canvas):
         
         canvas.create_polygon(self.x0, self.y0,
@@ -502,9 +505,9 @@ class RightBuilding():
                               width = 0)
 
 
-        canvas.create_oval(self.x0 + 5, self.y0+5,
-                           self.x0-5, self.y0-5,
-                           fill =  'red')
+        # canvas.create_oval(self.x0 + 5, self.y0+5,
+        #                    self.x0-5, self.y0-5,
+        #                    fill =  'red')
         
 
 
@@ -534,9 +537,41 @@ class RightBuilding():
         print('-----------------') 
 
 
-            
-
-
-# class Arm():
-#     def __init()__:
         
+class Arm():
+    def __init__(self, app,
+                 x0,y0,
+                 x1, y1,
+                 x2, y2,
+                 x3, y3,
+                 x4, y4,
+                 x5, y5):
+        self.x0, self.y0 = x0, y0
+        self.x1, self.y1 = x1, y1
+        self.x2, self.y2 = x2, y2
+        self.x3, self.y3 = x3, y3
+        self.x4, self.y4 = x4, y4
+        self.x5, self.y5 = x5, y5
+
+
+    def draw(self, app, canvas):                
+        canvas.create_polygon(self.x0, self.y0,
+                              self.x1, self.y1,
+                              self.x2, self.y2,
+                              self.x3, self.y3,
+                              outline = 'dark blue',
+                              fill = f'pink',
+                              width = 0)
+
+        
+        canvas.create_polygon(self.x0, self.y0,
+                              self.x3, self.y3,
+                              self.x4, self.y4,
+                              self.x5, self.y5,
+                              outline = 'dark blue',
+                              fill = f'pink',
+                              width = 0)
+
+
+
+
