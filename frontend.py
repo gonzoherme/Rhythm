@@ -383,8 +383,8 @@ def appStarted(app):
 
 
     # Loading image of sky
-    app.skyImage = app.loadImage('images/sky1.jpg')
-    app.skyImage = app.scaleImage(app.skyImage, 2) # rescale
+    app.skyImage = app.loadImage('images/sky2.png')
+    app.skyImage = app.scaleImage(app.skyImage, 1) # rescale
 
     
     
