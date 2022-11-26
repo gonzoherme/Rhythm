@@ -11,6 +11,10 @@ import subprocess, threading, time
 # Gif citation: https://giphy.com/nocopyrightsounds
 # Sky image citation: https://www.google.com/search?q=png+sky&source=lnms&tbm=isch&sa=X&ved=2ahUKEwj_8pLyzb37AhXcElkFHXeiDQQQ_AUoAXoECAIQAw&biw=1440&bih=800&dpr=2#imgrc=tEtK2gCdyG43YM
 
+
+
+
+
 # Song playlist initialization
 def getOriginalSongs():
     dir_path = r'/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/songs/originals'
@@ -185,3 +189,8 @@ def resetAll(app):
     app.heightTextBox.text = "Height: "
 
 
+# For rgb strings    
+def rgbString(r, g, b):
+    # Don't worry about the :02x part, but for the curious,
+    # it says to use hex (base 16) with two digits.
+    return f'#{r:02x}{g:02x}{b:02x}'

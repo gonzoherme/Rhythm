@@ -54,7 +54,7 @@ def startMode_mousePressed(app, event):
 
         
 
-def startMode_timerFired(app): # NOT WORKING!
+def startMode_timerFired(app):
     app.spriteCounter = (1 + app.spriteCounter) % len(app.spritePhotoImages)
     # print(len(app.spritePhotoImages))
 
@@ -71,11 +71,16 @@ def competitiveMode_redrawAll(app, canvas):
 
     app.road.draw(app, canvas)
 
-    
     # Draw sky
-    canvas.create_image(app.width/2, -app.height/10, image=ImageTk.PhotoImage(app.skyImage))
+    canvas.create_image(app.width/2, -0.1*app.height, image=ImageTk.PhotoImage(app.skyImage))
 
-    
+    # Draw gif
+    # photoImage = app.spritePhotoImages[app.spriteCounter]
+    # # photoImage = app.scaleImage(photoImage, 0.5)
+    # canvas.create_image(3*app.width/4, app.height/8, image=photoImage)
+
+
+    # Draw buttons and buttons
     app.backButton.draw(canvas)
     app.paceCounter.draw(canvas)
     app.distanceCounter.draw(canvas)
@@ -88,6 +93,7 @@ def competitiveMode_redrawAll(app, canvas):
 
 
 
+    app.buildings.draw(app, canvas)
 
 
     
@@ -158,6 +164,25 @@ def competitiveMode_keyPressed(app, event):
 def competitiveMode_timerFired(app):
     if app.start == True:
         app.timeCounter.value -= 1
+
+    # Move buildings: we simulate distance of further objects by moving them slower than the closer ones
+    for building in app.buildings.buildings:
+        if building.y0 < app.height/2:
+            building.move(app, 2)
+        else:
+            building.move(app, 5)
+
+
+    # Move dashes on road:
+    for dash in app.road.roadDashes:
+        if dash.y0 < app.height/2:
+            dash.move(app, 5)
+        else:
+            dash.move(app, 10)
+
+
+    # Gif
+    app.spriteCounter = (1 + app.spriteCounter) % len(app.spritePhotoImages)
 
             
 ########################################################################
@@ -331,8 +356,13 @@ def congratulationsMode_mousePressed(app, event):
 def appStarted(app):
     app.start = False
     app.margin = 0
+
     app.cx = app.width/2 # x of point 3D graphics point to
     app.cy = (app.height/4) # y of point 3D graphics point to
+
+    app.lx = app.width/2 # second 3D point
+    app.ly = (1.2*app.height/4)
+    
     app.mode = 'competitiveMode'
     
 
@@ -341,11 +371,11 @@ def appStarted(app):
     # Loading gif
     app.spritePhotoImages = loadAnimatedGif('images/green_ncs.gif')
     app.spriteCounter = 0
-    app.timerDelay = 10
+    app.timerDelay = 100
 
 
     # Loading image of sky
-    app.skyImage = app.loadImage('images/sky.jpg')
+    app.skyImage = app.loadImage('images/sky1.jpg')
     app.skyImage = app.scaleImage(app.skyImage, 2) # rescale
 
     
@@ -378,19 +408,19 @@ def appStarted(app):
     
     ########### CREATING ALL THE COUNTERS WE NEED #####################
       # Pace Counter
-    app.paceCounter = Counter('Pace: ', 1, 'lightgreen', 'lightblue', app, 0.68, '')
-    app.paceCounter.setSize(app.width/8, app.height/20,
-                            7*app.width/8, 1.5*app.height/12)    
+    app.paceCounter = Counter('Pace: ', 1, 'black', 'lightblue', app, 0.5, '')
+    app.paceCounter.setSize((app.width/2) - 100, 0.5*app.height/20,
+                            (app.width/2) + 100, 0.5*1.5*app.height/12)    
 
       # Distance Counter
-    app.distanceCounter = Counter('Distance: ', 0, 'lightblue', 'black', app, 1, 'm')
-    app.distanceCounter.setSize(app.width/10, 1.4*app.height/18,
-                                2.1*app.width/10, 2*app.height/18)    
+    app.distanceCounter = Counter('Distance: ', 0, 'lightblue', rgbString(0, 0, 100), app, 0.3, 'm')
+    app.distanceCounter.setSize(8*app.width/20, 1.4*app.height/18,
+                                10*app.width/20, 2*app.height/18)    
 
       # Time Counter
-    app.timeCounter = Counter('Time: ', 100, 'lightyellow', 'black', app, 1, 's')
-    app.timeCounter.setSize(app.width/10, app.height/18,
-                            2*app.width/10, 1.5*app.height/18)        
+    app.timeCounter = Counter('Time: ', 100, 'lightblue', rgbString(0, 0, 100), app, 0.25, 's')
+    app.timeCounter.setSize(10.3*app.width/20, 1.4*app.height/18,
+                            12.1*app.width/20, 2*app.height/18)       
     
     ##################################################################
 
@@ -412,11 +442,14 @@ def appStarted(app):
 
 
 
-    # Create 3D graphics
-    app.road = Road('gray', 'white')
-    app.road.setSize(0.1*app.width, 1*app.height, 0.9*app.width, 1*app.height)
+    # CREATING 3D GRAPHICS
+    # Creating road
+    app.road = Road(app, 'gray', 'yellow')
+    app.road.setSize(-0.05*app.width, 1.2*app.height, 1.05*app.width, 1.2*app.height)
+
+    # Creating building class
+    app.buildings = LeftBuildings(app)
+
     
-
-
     
 runApp(width = 1160, height = 800)
