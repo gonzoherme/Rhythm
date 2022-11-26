@@ -93,7 +93,8 @@ def competitiveMode_redrawAll(app, canvas):
 
 
 
-    app.buildings.draw(app, canvas)
+    app.leftBuildings.draw(app, canvas)
+    app.rightBuildings.draw(app, canvas)
 
 
     
@@ -125,6 +126,7 @@ def competitiveMode_keyPressed(app, event):
             # Congrats!
             app.mode = 'congratulationsMode'
             resetAll(app)
+
             
         
 
@@ -165,12 +167,22 @@ def competitiveMode_timerFired(app):
     if app.start == True:
         app.timeCounter.value -= 1
 
+    # Gif
+    app.spriteCounter = (1 + app.spriteCounter) % len(app.spritePhotoImages)
+
+    # MAKE ALL MOVEMENTS SURROUNDINGS
     # Move buildings: we simulate distance of further objects by moving them slower than the closer ones
-    for building in app.buildings.buildings:
+    for building in app.leftBuildings.buildings:
         if building.y0 < app.height/2:
             building.move(app, 2)
         else:
-            building.move(app, 5)
+            building.move(app, 4)
+
+    for building in app.rightBuildings.buildings:
+        if building.y0 < app.height/2:
+            building.move(app, 2)
+        else:
+            building.move(app, 4)
 
 
     # Move dashes on road:
@@ -180,10 +192,7 @@ def competitiveMode_timerFired(app):
         else:
             dash.move(app, 10)
 
-
-    # Gif
-    app.spriteCounter = (1 + app.spriteCounter) % len(app.spritePhotoImages)
-
+    
             
 ########################################################################
         
@@ -228,7 +237,7 @@ def intermediateMode_mousePressed(app, event):
         
         time.sleep(0.1) # delay used to simulate button friction
         app.mode = 'competitiveMode'
-        app.timerDelay = 1000
+        app.timerDelay = 100
 
         # Changing songs to set pace
         for song in app.playlist:
@@ -304,7 +313,7 @@ def followMode_mousePressed(app, event):
         
         time.sleep(0.1) # delay used to simulate button friction
         app.mode = 'competitiveMode'
-        app.timerDelay = 1000
+        app.timerDelay = 100
 
         # Changing songs to set pace
         for song in app.playlist:
@@ -364,14 +373,13 @@ def appStarted(app):
     app.ly = (1.2*app.height/4)
     
     app.mode = 'competitiveMode'
-    
 
     app.playlist = getOriginalSongs()
 
     # Loading gif
     app.spritePhotoImages = loadAnimatedGif('images/green_ncs.gif')
     app.spriteCounter = 0
-    app.timerDelay = 100
+    app.timerDelay = 20
 
 
     # Loading image of sky
@@ -448,7 +456,8 @@ def appStarted(app):
     app.road.setSize(-0.05*app.width, 1.2*app.height, 1.05*app.width, 1.2*app.height)
 
     # Creating building class
-    app.buildings = LeftBuildings(app)
+    app.leftBuildings = LeftBuildings(app)
+    app.rightBuildings = RightBuildings(app)
 
     
     

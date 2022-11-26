@@ -272,8 +272,8 @@ class roadDash():
             self.__init__(app, 'white', 'black',
                          300, 20, 40)
 
-        print(f'roadDash(app, {self.fill}, {self.outlineColor}, {self.y}, {self.w}, {self.depth})')
-        print('-----------------')        
+        # print(f'roadDash(app, {self.fill}, {self.outlineColor}, {self.y}, {self.w}, {self.depth})')
+        # print('-----------------')        
     
 
         
@@ -286,7 +286,7 @@ class LeftBuildings():
 
         building3 = LeftBuilding(app, 231.41521836673112, 667.8805515148457, 77.13840612224375, 225.45113720879763, 581.8218522366799, 'gray', 'gray')
 
-        self.buildings = [building1, building3]
+        self.buildings = [building1, building2, building3]
 
         
     def draw(self, app, canvas):
@@ -400,6 +400,140 @@ class LeftBuilding():
             self.__init__(app, 120, 250, 40,
                           450, 340,
                           'gray', 'gray')
+
+
+class RightBuildings():
+    def __init__(self, app):
+        building1 = RightBuilding(app, 120, 250, 40,
+                          710, 340,
+                          'gray', 'gray')
+
+
+        building2 = RightBuilding(app, 146.0, 510, 76.4,
+                                  803.2218006133187, 440.3927083528047, 
+                                  'gray', 'gray')
+
+        self.buildings = [building1, building2]
+
+        
+    def draw(self, app, canvas):
+        for building in self.buildings:
+            building.draw(app, canvas)
+    
+    def move(self, app, displacement):
+        for building in self.buildings:
+            building.move(app, displacement)
+
+
+            
+
+class RightBuilding():
+    def __init__(self, app, width, height, depth,
+                 x0, y0,
+                 fill, outlineColor):
+        
+        self.fill = fill
+        self.outlineColor = outlineColor
+        self.w = width
+        self.h = height
+        
+        self.depthLower = depth
+        self.depthHigher = 1.1*(self.depthLower)
+
+
+        self.x0 = x0
+        self.y0 = y0  
+        # print(f'x0: {self.x0}, y0: {self.y0}')
+
+        self.x1 = self.x0
+        self.y1 = self.y0 - self.h
+       
+        
+        # CALCULATING POINTS
+        #FACE OF BUILDING
+        self.x3 = x0 + self.w 
+        self.y3 = self.y0
+        
+        
+        self.x2 = self.x3
+        self.y2 = self.y1
+       
+
+        # Line equation for center point: y = mx + b
+        self.cm = (app.cy-self.y0)/(app.cx-self.x0) # m = \delta y/ \delta x
+        self.cb = app.cy - (self.cm * app.cx)# b = (y - mx)
+        
+        # Line equation for lower point: y = mx + b
+        self.lm = (app.ly-self.y1)/(app.lx-self.x1)
+        self.lb = app.ly - (self.lm * app.lx)
+        
+        
+        # RIGHT SIDE: create a function for this to make it neater
+        self.x5 = self.x0 - (self.depthLower/sqrt(1+(self.cm**2)))  # x1 = x0 + d/ sqrt(1+m^2)        
+        self.y5  = (self.cm * self.x5) + self.cb # y = mx + b
+
+        
+        self.x4 = self.x1 - (self.depthHigher/sqrt(1+(self.lm**2)))
+        self.y4 = (self.lm * self.x4) + self.lb
+
+
+        # print(f'Building(app, {self.w}, {self.h}, {self.depthLower}, {self.x0}, {self.y0})')
+        # print('-----------------')        
+
+
+        
+    def draw(self, app, canvas):
+        
+        canvas.create_polygon(self.x0, self.y0,
+                              self.x3, self.y3,
+                              self.x2, self.y2,
+                              self.x1, self.y1,
+                              outline = self.outlineColor,
+                              fill = f'dark {self.fill}',
+                              width = 0)
+
+        
+        canvas.create_polygon(self.x0, self.y0,
+                              self.x1, self.y1,
+                              self.x4, self.y4,
+                              self.x5, self.y5,
+                              outline = self.outlineColor,
+                              fill = f'{self.fill}',
+                              width = 0)
+
+
+        canvas.create_oval(self.x0 + 5, self.y0+5,
+                           self.x0-5, self.y0-5,
+                           fill =  'red')
+        
+
+
+    def move(self, app, displacement):
+        # Readjust all variables to project forwards (look at math of projection in folder)
+        #  We are projecting forwards now, instead of backwards
+        nx0 = self.x0 + (displacement/sqrt(1 + (self.cm**2)))
+        ny0 = (self.cm * nx0) + self.cb
+
+        # Account for closer objects
+        self.__init__(app, self.w + 0.5,
+                      self.h + 5, self.depthLower + 0.7,
+                      nx0, ny0,
+                      self.fill, self.outlineColor)
+
+        # Check if building is out of canvas through point nx5
+        nx5 = nx0 - (1.01*self.depthLower/sqrt(1+(self.cm**2))) 
+        if nx5 > 1.05*app.width :
+            #reset the building
+            self.__init__(app, 120, 250, 40,
+                          710, 340,
+                          'gray', 'gray')
+
+
+
+        print(f'Building(app, {self.w}, {self.h}, {self.depthLower}, {self.x0}, {self.y0})')
+        print('-----------------') 
+
+
             
 
 
