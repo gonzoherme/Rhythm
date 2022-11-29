@@ -63,8 +63,7 @@ def startMode_timerFired(app):
 
         
 
-################################# COMPETITIVE MODE #####################
-
+############################ COMPETITIVE MODE #####################
 
 def competitiveMode_redrawAll(app, canvas):
     # Colors for background: very cool rgbString(0, 0, 100), rgbString(app.r,app.g,app.b)
@@ -79,9 +78,6 @@ def competitiveMode_redrawAll(app, canvas):
     # photoImage = app.spritePhotoImages[app.spriteCounter]
     # # photoImage = app.scaleImage(photoImage, 0.5)
     # canvas.create_image(3*app.width/4, app.height/8, image=photoImage)
-
-
-
 
     # Check if runner done
     if app.timeCounter.value == 0 and app.distanceCounter.value < app.distanceMeters:
@@ -179,34 +175,63 @@ def competitiveMode_keyPressed(app, event):
         # Play our playlist
         # Shuffle the playlist
         shuffle(app.playlist)
-        c = 0
-        app.playlist[0].start()
-        #play next song if P
+        app.playlist[app.c].start()
+    #play next song if music stops playing
+    if not app.playlist[app.c].isPlaying():
+        # change counter value (not commiting error of passing index)
+        if app.c <= len(app.playlist)-1:
+            app.c += 1
+            app.playlist[app.c].start()
+
+        else:
+            app.c = 0
+            app.playlist[app.c].start()
+                
+
+    print(app.playlist[app.c])
+
+
+
+    # Movement of player
+    if event.key == 'Left':
+        if app.leftArmDown.xi[2] > (app.road.bottomLeftX + 200) and app.leftArmUp.xi[2] > (app.road.bottomLeftX + 200):
+            # Only move if don't go out frame
+            for i in range(len(app.rightArmUp.xi)):
+                app.rightArmUp.xi[i] -= 25
+
+            for i in range(len(app.leftArmUp.xi)):
+                app.leftArmUp.xi[i] -= 25
+            
+            for i in range(len(app.rightArmDown.xi)):
+                app.rightArmDown.xi[i] -= 25
+                
+            for i in range(len(app.leftArmDown.xi)):
+                app.leftArmDown.xi[i] -= 25
+
+            
         
-        
+    elif event.key == 'Right':
+            # Only move if don't go out frame
+            if app.rightArmDown.xi[2] < (app.road.bottomRightX - 200) and app.rightArmUp.xi[2] < (app.road.bottomRightX - 200):
+                for i in range(len(app.rightArmUp.xi)):
+                    app.rightArmUp.xi[i] += 25
 
-    # temporary code that will be replaced with opencv
-    elif event.key == 'Up':
-        if app.paceCounter.value < 20:
-            app.paceCounter.value += 1
+                for i in range(len(app.leftArmUp.xi)):
+                    app.leftArmUp.xi[i] += 25
+            
+                for i in range(len(app.rightArmDown.xi)):
+                    app.rightArmDown.xi[i] += 25
+                
+                for i in range(len(app.leftArmDown.xi)):
+                    app.leftArmDown.xi[i] += 25  
 
-            # change tempo in all songs (not implemented yet)
-            # for song in app.playlist:
-            #     song.changeTempo(app.paceCounter.value)
-
-    elif event.key == 'Down':
-        if app.paceCounter.value > 0:
-            app.paceCounter.value -= 1
-
-            # change tempo in all songs (not implemented yet)
-            # for song in app.playlist:
-            #     song.changeTempo(app.paceCounter.value)
-
-
+            
             
 def competitiveMode_timerFired(app):
     if app.start == True:
-        app.timeCounter.value -= 1
+        # Since timerFired is set at 100, but only want every second, we compensate by substracting 0.1s
+        app.timeCounter.value -= 0.1
+        app.timeCounter.value = float(reduceDecimals(app.timeCounter.value))
 
     # Gif
     app.spriteCounter = (1 + app.spriteCounter) % len(app.spritePhotoImages)
@@ -318,10 +343,7 @@ def intermediateMode_keyPressed(app, event):
             app.currentTextBox.text += event.key
 
 
-
 ####################################################################
-
-
     
 
 
@@ -339,21 +361,24 @@ def followMode_redrawAll(app, canvas):
 
     
 def followMode_mousePressed(app, event):
-    # If back button pressed:
+    # If next button pressed:
     app.intermediateToCompetitive.isPressed(event, app)
     if app.intermediateToCompetitive.pressed:
         time.sleep(0.1) # delay used to simulate button friction
-        app.mode = 'competitiveMode' 
 
-        # Reset distance from previous session
-        if app.distanceCounter.value != 0:
-            app.distanceCounter.value = 0
-        
+
         # Setup all the required data
-        record 
+        # app.stepsPerMinute = clicksperSecond
+        app.stepsPerMinutes = 50
+        app.distanceCounter.value = 0
+        app.timeCounter.value = 0
+        app.heightMeters = 1.8
+        app.strideMeters = app.heightMeters * 1.17
+
+
         
         time.sleep(0.1) # delay used to simulate button friction
-        app.mode = 'competitiveMode'
+        app.mode = 'competitiveFollowMode'
         app.timerDelay = 100
 
         # Changing songs to set pace
@@ -369,6 +394,136 @@ def followMode_mousePressed(app, event):
 
 
 
+############################ COMPETITIVE MODE #####################
+
+def competitiveFollowMode_redrawAll(app, canvas):
+    # Colors for background: very cool rgbString(0, 0, 100), rgbString(app.r,app.g,app.b)
+    drawBackground(app, canvas, rgbString(app.r,app.g,app.b))
+
+    app.road.draw(app, canvas)
+
+    # Draw sky
+    canvas.create_image(app.width/2, 0.01*app.height, image=ImageTk.PhotoImage(app.skyImage))
+
+
+    # Draw all buildings
+    app.leftBuildings.draw(app, canvas)
+    app.rightBuildings.draw(app, canvas)
+
+    # Draw appropiate arms
+    app.currentRightArm.draw(app, canvas)
+    app.currentLeftArm.draw(app, canvas)
+
+    # Draw buttons and counters
+    app.backButton.draw(canvas)
+    app.paceCounter.draw(canvas)
+    app.distanceCounter.draw(canvas)
+    app.timeCounter.draw(canvas)
+
+
+    
+def competitiveFollowMode_mousePressed(app, event):
+    # If back button pressed:
+    app.backButton.isPressed(event, app)
+    if app.backButton.pressed:
+        time.sleep(0.1) # delay used to simulate button friction
+        app.mode = 'startMode'
+        app.timerDelay = 20
+
+        
+
+def competitiveFollowMode_keyPressed(app, event):
+    if event.key == 'Space':
+        # Convert back to float
+        app.distanceCounter.value = float(app.distanceCounter.value)
+        
+        # Increase distance by whatever calculation
+        app.distanceCounter.value += app.strideMeters
+        
+        # Make sure only displays two decimals        
+        app.distanceCounter.value = reduceDecimals(app.distanceCounter.value)
+    
+
+        # Change boolean for which arm up
+        app.isRightArmUp = not app.isRightArmUp
+
+        if app.isRightArmUp == True:
+            app.currentRightArm = app.rightArmUp
+            app.currentLeftArm = app.leftArmDown
+        else:
+            app.currentRightArm = app.rightArmDown
+            app.currentLeftArm = app.leftArmUp
+
+
+        # Move surroinding objects faster if running faster
+        # Move buildings: we simulate distance of further objects by moving them slower than the closer ones
+        for building in app.leftBuildings.buildings:
+            if building.y0 < app.height/2:
+                building.move(app, 2)
+            else:
+                building.move(app, 4)
+
+        for building in app.rightBuildings.buildings:
+            if building.y0 < app.height/2:
+                building.move(app, 2)
+            else:
+                building.move(app, 4)
+
+
+        # Move dashes on road:
+        for dash in app.road.roadDashes:
+            if dash.y0 < app.height/2:
+                dash.move(app, 5)
+            else:
+                dash.move(app, 10)
+
+                 
+
+    # Press enter to start playing songs
+    if event.key == 'Enter' or event.key == 'Return':
+        # We start to play the songs, as well as start the countdown
+        app.start = True
+
+        # Start playing playlist
+        # Shuffle the playlist first
+        shuffle(app.playlist)
+        c = 0
+        app.playlist[0].start()
+
+    
+        
+        
+
+            
+def competitiveFollowMode_timerFired(app):
+    if app.start == True:
+        app.timeCounter.value += 1    
+
+    # MAKE ALL MOVEMENTS SURROUNDINGS
+    # Move buildings: we simulate distance of further objects by moving them slower than the closer ones
+    for building in app.leftBuildings.buildings:
+        if building.y0 < app.height/2:
+            building.move(app, 2)
+        else:
+            building.move(app, 4)
+
+    for building in app.rightBuildings.buildings:
+        if building.y0 < app.height/2:
+            building.move(app, 2)
+        else:
+            building.move(app, 4)
+
+
+    # Move dashes on road:
+    for dash in app.road.roadDashes:
+        if dash.y0 < app.height/2:
+            dash.move(app, 5)
+        else:
+            dash.move(app, 10)
+
+    
+            
+########################################################################
 
 
 
@@ -405,10 +560,12 @@ def congratulationsMode_mousePressed(app, event):
 #################################### MAIN APP #####################################
 def appStarted(app):
     app.start = False
-    app.isRightArmUp = False # boolean for movement of arms in 3DXSXS
+    app.isRightArmUp = False # boolean for movement of arms in 3D
     app.margin = 0
     app.colors = ['green', 'gray', 'yellow', 'blue', 'orange']
 
+    app.c = 0 # index of the song playlist 
+    
     app.cx = app.width/2 # x of point 3D graphics point to
     app.cy = (app.height/4) # y of point 3D graphics point to
 
@@ -417,7 +574,7 @@ def appStarted(app):
     
     app.mode = 'startMode'
 
-    app.playlist = []# getOriginalSongs()
+    app.playlist = getOriginalSongs()
 
     # Loading gif
     app.spritePhotoImages = loadAnimatedGif('images/blue_ncs.gif')
@@ -510,42 +667,42 @@ def appStarted(app):
     # Creating right Arm
     # ORIGINAL ARM
     app.rightArmUp = Arm(app,
-                   750, 600,
-                   840, 620,
-                   900, app.height,                       
-                   800, app.height,
-                       
+                   700, 600,
+                   790, 620,
+                   850, app.height,                       
                    750, app.height,
-                   720, 650)
+                       
+                   700, app.height,
+                   670, 650)
 
     app.rightArmDown = Arm(app,
-                   750, 700,
-                   840, 720,
-                   900, app.height,                       
-                   800, app.height,
-                       
+                   700, 700,
+                   790, 720,
+                   850, app.height,                       
                    750, app.height,
-                   720, 750)
+                       
+                   700, app.height,
+                   670, 750)
 
     # creating symmetry with right arm
     app.leftArmUp = Arm(app,
-                   (app.width/2)-(750-(app.width/2)), 600,
-                   (app.width/2)-(840-(app.width/2)), 620,
-                   (app.width/2)-(900-(app.width/2)), app.height,                       
-                   (app.width/2)-(800-(app.width/2)), app.height,
-                       
+                   (app.width/2)-(700-(app.width/2)), 600,
+                   (app.width/2)-(790-(app.width/2)), 620,
+                   (app.width/2)-(850-(app.width/2)), app.height,                       
                    (app.width/2)-(750-(app.width/2)), app.height,
-                   (app.width/2)-(720-(app.width/2)), 650)
+                       
+                   (app.width/2)-(700-(app.width/2)), app.height,
+                   (app.width/2)-(670-(app.width/2)), 650)
 
 
     app.leftArmDown = Arm(app,
-                   (app.width/2)-(750-(app.width/2)), 700,
-                   (app.width/2)-(840-(app.width/2)), 720,
-                   (app.width/2)-(900-(app.width/2)), app.height,                       
-                   (app.width/2)-(800-(app.width/2)), app.height,
-                       
+                   (app.width/2)-(700-(app.width/2)), 700,
+                   (app.width/2)-(790-(app.width/2)), 720,
+                   (app.width/2)-(850-(app.width/2)), app.height,                       
                    (app.width/2)-(750-(app.width/2)), app.height,
-                   (app.width/2)-(720-(app.width/2)), 750)
+                       
+                   (app.width/2)-(700-(app.width/2)), app.height,
+                   (app.width/2)-(670-(app.width/2)), 750)
 
     # By defuault, we set right arm to be up and left arm down
     app.currentRightArm = app.rightArmUp

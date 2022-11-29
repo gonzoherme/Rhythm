@@ -553,21 +553,22 @@ class Arm():
         self.x4, self.y4 = x4, y4
         self.x5, self.y5 = x5, y5
 
+        self.xi = [self.x0, self.x1, self.x2, self.x3, self.x4, self.x5]
 
     def draw(self, app, canvas):                
-        canvas.create_polygon(self.x0, self.y0,
-                              self.x1, self.y1,
-                              self.x2, self.y2,
-                              self.x3, self.y3,
+        canvas.create_polygon(self.xi[0], self.y0,
+                              self.xi[1], self.y1,
+                              self.xi[2], self.y2,
+                              self.xi[3], self.y3,
                               outline = 'dark blue',
                               fill = f'pink',
                               width = 0)
 
         
-        canvas.create_polygon(self.x0, self.y0,
-                              self.x3, self.y3,
-                              self.x4, self.y4,
-                              self.x5, self.y5,
+        canvas.create_polygon(self.xi[0], self.y0,
+                              self.xi[3], self.y3,
+                              self.xi[4], self.y4,
+                              self.xi[5], self.y5,
                               outline = 'dark blue',
                               fill = f'pink',
                               width = 0)

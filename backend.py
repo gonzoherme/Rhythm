@@ -189,6 +189,7 @@ def resetAll(app):
     app.distanceTextBox.text = "Distance goal: "
     app.timeTextBox.text = "Time goal: "
     app.heightTextBox.text = "Height: "
+    app.timerDelay = 20
 
 
 # For rgb strings    
@@ -196,3 +197,42 @@ def rgbString(r, g, b):
     # Don't worry about the :02x part, but for the curious,
     # it says to use hex (base 16) with two digits.
     return f'#{r:02x}{g:02x}{b:02x}'
+
+
+####################### CLICKS PER SECOND METER #####################
+
+time_list = []
+def tap_estimate():
+    global time_list, scale
+    time_list.append(time.time())
+    list_len = len(time_list)
+    N = 6
+    if list_len > 1:
+        # If two time far away from each other 
+        # throw away the former times, only left the last one
+        if time_list[-1] - time_list[-2] > 2:
+            time_list = time_list[-1:]
+        else:
+            if list_len < N:
+                interval = (time_list[-1] - time_list[0]) / (list_len - 1)
+            else:
+                interval = (time_list[-1] - time_list[-N]) / (N - 1)
+            tempo = int(60/interval)
+            scale.set(tempo)
+    else:
+        # Keep tapping 
+        pass 
+    # print(time_list)
+
+
+def key_pressed(event):
+    global ON 
+    if event.char == ' ':
+        ON = not ON
+    elif event.char == 't':
+        tap_estimate()
+
+
+
+
+#####################################################################
