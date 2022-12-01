@@ -53,13 +53,15 @@ class Counter():
 
 # Button built basing upon the button presented in Mini-Lecture Advanced Tkinter
 class Button():
-    def __init__(self, name, buttonNum, app, textColour, fill):
+    def __init__(self, name, buttonNum, app, textColour, fill,
+                 outlineColor):
         self.name = name
         self.buttonNum = buttonNum
         self.text = name
         self.pressed = False
         self.fill = fill
         self.textColour = textColour
+        self.outline = outlineColor
 
         
     def setSize(self, topLeftX, topLeftY, bottomRightX, bottomRightY):  
@@ -98,7 +100,8 @@ class Button():
         # Draw rectangle
         canvas.create_rectangle(self.topLeftX, self.topLeftY,
                                 self.bottomRightX, self.bottomRightY,
-                                fill = self.fill)
+                                fill = self.fill, outline = self.outline,
+                                width = 8)
         # Draw text
         canvas.create_text(self.centerButtonX, self.centerButtonY,
                            text = self.text,
@@ -479,8 +482,6 @@ class RightBuilding():
 
         # print(f'Building(app, {self.w}, {self.h}, {self.depthLower}, {self.x0}, {self.y0})')
         # print('-----------------')        
-
-
         
         # Set fill to be random color?
         # self.fill = app.colors[]
@@ -504,10 +505,6 @@ class RightBuilding():
                               fill = f'{self.fill}',
                               width = 0)
 
-
-        # canvas.create_oval(self.x0 + 5, self.y0+5,
-        #                    self.x0-5, self.y0-5,
-        #                    fill =  'red')
         
 
 
@@ -531,12 +528,8 @@ class RightBuilding():
                           710, 340,
                           'gray', 'gray')
 
-
-
-        print(f'Building(app, {self.w}, {self.h}, {self.depthLower}, {self.x0}, {self.y0})')
-        print('-----------------') 
-
-
+        # print(f'Building(app, {self.w}, {self.h}, {self.depthLower}, {self.x0}, {self.y0})')
+        # print('-----------------') 
         
 class Arm():
     def __init__(self, app,
@@ -572,6 +565,181 @@ class Arm():
                               outline = 'dark blue',
                               fill = f'pink',
                               width = 0)
+
+######################### COIN CLASS ################################
+
+class AllCoins():
+    def __init__(self, app):
+        coinLeft = CoinLeft(app, 530, 300, 40)
+        coinRight = CoinRight(app, 630, 300, 40)
+        # coinRight = CoinRight(
+        self.coins = [coinLeft, coinRight]
+        
+    
+    def move(self, app, displacement):
+        for coin in self.coins:
+            coin.move(app, displacement)
+
+
+class CoinLeft():
+    def __init__(self, app, x0, y0, radius):
+        self.x0 = x0
+        self.y0 = y0  
+        self.r = radius
+
+        app.starting_x0 =  530
+        app.starting_y0 = 300
+        app.starting_r = 40
+        
+        self.fill = 'yellow'
+        self.outlineColor = 'black'       
+
+        # Line equation for center point: y = mx + b
+        self.cm = (app.cy - self.y0)/(app.cx-self.x0) # m = \delta y/ \delta x
+        self.cb = app.cy - (self.cm * app.cx)# b = (y - mx)    
+
+
+            
+    def draw(self, app, canvas):        
+        canvas.create_oval(self.x0 + self.r, self.y0 + self.r,
+                              self.x0 - self.r, self.y0 - self.r,
+                              outline = self.outlineColor,
+                              fill = self.fill,
+                              width = 1)
+
+            
+    def move(self, app, displacement):
+        # Readjust all variables to project forwards (look at math of projection in TP folder)
+        #  We are projecting forwards the coin
+        nx0 = self.x0 - (displacement/sqrt(1 + (self.cm**2)))
+        ny0 = (self.cm * nx0) + self.cb
+
+        # Account for coin being closer
+        self.__init__(app, nx0, ny0, 1.01*self.r)
+
+        # Check if coin is out of canvas through point nxy 
+        if ny0 + 200 > app.height :
+            # random coin
+            self.__init__(app, 530, 300, 50)
+
+
+
+    def inContact(self, arm):
+        # if any two top points of arm within coin bounds 
+        if ( (self.x0 - self.r) <= arm.x0 <= (self.x0 + self.r)  and  (self.y0 - self.r) < arm.y0 < (self.y0 + self.r) ):
+            return True
+        
+        else:
+            return False
+
+        
+# class CoinRight(CoinLeft): # we only need to change 'move' function to move with respect to different line
+#     def __init__(self, app, x0, y0, radius):
+#         super().__init__(app, x0, y0, radius)
+
+#         # Line equation for center point: y = mx + b
+#         self.cm = (app.cy-self.y0)/(app.cx-self.x0) # m = \delta y/ \delta x
+#         self.cb = app.cy - (self.cm * app.cx)# b = (y - mx)    
+
+
+
+#     def move(self, app, displacement):
+#         super().move(app, displacement)
+#         # Readjust all variables to project forwards (look at math of projection in TP folder)
+#         #  We are projecting forwards the coin
+#         nx0 = self.x0 + (displacement/sqrt(1 + (self.cm**2)))
+#         ny0 = (self.cm * nx0) + self.cb
+
+#         # Account for coin being closer
+#         self.__init__(app, nx0, ny0, 1.01*self.r)
+
+#         # Check if building is out of canvas through point nxy 
+#         if ny0 > app.height :
+#             # reset the coin
+#             self.__init__(app, 630, 300, 40)
+
+
+
+
+
+class CoinRight():
+    def __init__(self, app, x0, y0, radius):
+        self.x0 = x0
+        self.y0 = y0  
+        self.r = radius
+
+        
+        self.fill = 'yellow'
+        self.outlineColor = 'black'       
+
+        # Line equation for center point: y = mx + b
+        self.cm = (app.cy - self.y0)/(app.cx-self.x0) # m = \delta y/ \delta x
+        self.cb = app.cy - (self.cm * app.cx)# b = (y - mx)    
+
+
+            
+    def draw(self, app, canvas):        
+        canvas.create_oval(self.x0 + self.r, self.y0 + self.r,
+                              self.x0 - self.r, self.y0 - self.r,
+                              outline = self.outlineColor,
+                              fill = self.fill,
+                              width = 1)
+
+            
+    def move(self, app, displacement):
+        # Readjust all variables to project forwards (look at math of projection in TP folder)
+        #  We are projecting forwards the coin
+        nx0 = self.x0 + (displacement/sqrt(1 + (self.cm**2)))
+        ny0 = (self.cm * nx0) + self.cb
+
+        # Account for coin being closer
+        self.__init__(app, nx0, ny0, 1.01*self.r)
+
+        # Check if building is out of canvas through point nxy 
+        if ny0 + 200 > app.height :
+            # generate random coin
+            self.__init__(app, 630, 300, 40)
+            # app.currentCoin= app.COINS.coins[randint(0, len(app.COINS.coins) - 1)]
+
+
+
+    def inContact(self, arm):
+        # if any two top points of arm within coin bounds
+        if ( (self.x0 - self.r) <= arm.xi[0] <= (self.x0 + self.r)
+             and  (self.y0 - self.r) < arm.y0 < (self.y0 + self.r)
+             or
+            (self.x0 - self.r) <= arm.xi[1] <= (self.x0 + self.r)
+             and  (self.y0 - self.r) < arm.y1 < (self.y0 + self.r)):
+            return True
+        
+        else:
+            return False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class CoinCenter(CoinLeft): # we only need to change 'move' function to move with respect to different line
+    def __init__(self, app, x0, y0, radius):
+        super().__init__(app, x0, y0, radius)
+
+        # Line equation for center point: y = mx + b
+        self.cm = (app.cy-self.y0)/(app.cx-self.x0) # m = \delta y/ \delta x
+        self.cb = app.cy - (self.cm * app.cx)# b = (y - mx)    
+                  
+
+            
+#####################################################################
 
 
 

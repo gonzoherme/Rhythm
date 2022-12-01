@@ -1,11 +1,11 @@
 from cmu_112_graphics import *
 from tkinter import *
 from backend import *
-# from opencv import *
 from random import randint, shuffle
 from PIL import Image, ImageTk, ImageSequence
 from objects import *
 from random import randint
+import copy
 
 
         
@@ -56,7 +56,6 @@ def startMode_mousePressed(app, event):
 
 def startMode_timerFired(app):
     app.spriteCounter = (1 + app.spriteCounter) % len(app.spritePhotoImages)
-    # print(len(app.spritePhotoImages))
 
 ########################################################################
 
@@ -74,10 +73,6 @@ def competitiveMode_redrawAll(app, canvas):
     # Draw sky
     canvas.create_image(app.width/2, 0.01*app.height, image=ImageTk.PhotoImage(app.skyImage))
 
-    # Draw gif
-    # photoImage = app.spritePhotoImages[app.spriteCounter]
-    # # photoImage = app.scaleImage(photoImage, 0.5)
-    # canvas.create_image(3*app.width/4, app.height/8, image=photoImage)
 
     # Check if runner done
     if app.timeCounter.value == 0 and app.distanceCounter.value < app.distanceMeters:
@@ -89,15 +84,23 @@ def competitiveMode_redrawAll(app, canvas):
     app.leftBuildings.draw(app, canvas)
     app.rightBuildings.draw(app, canvas)
 
+
+    # Draw coin
+    app.currentCoin.draw(app, canvas)
+    
     # Draw appropiate arms
     app.currentRightArm.draw(app, canvas)
     app.currentLeftArm.draw(app, canvas)
-
+    # app.rightArmUp.draw(app, canvas)
+    # app.leftArmUp.draw(app, canvas)
+    # app.leftArmUp.draw(app, canvas)
+    
     # Draw buttons and counters
     app.backButton.draw(canvas)
     app.paceCounter.draw(canvas)
     app.distanceCounter.draw(canvas)
     app.timeCounter.draw(canvas)
+    app.scoreCounter.draw(canvas)
 
 
     
@@ -165,7 +168,9 @@ def competitiveMode_keyPressed(app, event):
             else:
                 dash.move(app, 10)
 
-                 
+
+                
+                          
 
     # Press enter to start playing songs
     if event.key == 'Enter' or event.key == 'Return':
@@ -188,7 +193,6 @@ def competitiveMode_keyPressed(app, event):
             app.playlist[app.c].start()
                 
 
-    print(app.playlist[app.c])
 
 
 
@@ -208,25 +212,43 @@ def competitiveMode_keyPressed(app, event):
             for i in range(len(app.leftArmDown.xi)):
                 app.leftArmDown.xi[i] -= 25
 
+        # if app.isRightArmUp == True:
+        #     app.currentRightArm = app.rightArmUp
+        #     app.currentLeftArm = app.leftArmDown
+        # else:
+        #     app.currentRightArm = app.rightArmDown
+        #     app.currentLeftArm = app.leftArmUp
+            
+                
+
             
         
     elif event.key == 'Right':
-            # Only move if don't go out frame
-            if app.rightArmDown.xi[2] < (app.road.bottomRightX - 200) and app.rightArmUp.xi[2] < (app.road.bottomRightX - 200):
-                for i in range(len(app.rightArmUp.xi)):
-                    app.rightArmUp.xi[i] += 25
+        # Only move if don't go out frame
+        if app.rightArmDown.xi[2] < (app.road.bottomRightX - 200) and app.rightArmUp.xi[2] < (app.road.bottomRightX - 200):
+            for i in range(len(app.rightArmUp.xi)):
+                app.rightArmUp.xi[i] += 25
 
-                for i in range(len(app.leftArmUp.xi)):
-                    app.leftArmUp.xi[i] += 25
+            for i in range(len(app.leftArmUp.xi)):
+                app.leftArmUp.xi[i] += 25
             
-                for i in range(len(app.rightArmDown.xi)):
-                    app.rightArmDown.xi[i] += 25
+            for i in range(len(app.rightArmDown.xi)):
+                app.rightArmDown.xi[i] += 25
                 
-                for i in range(len(app.leftArmDown.xi)):
-                    app.leftArmDown.xi[i] += 25  
+            for i in range(len(app.leftArmDown.xi)):
+                app.leftArmDown.xi[i] += 25
 
             
+        # if app.isRightArmUp == True:
+        #     app.currentRightArm = app.rightArmUp
+        #     app.currentLeftArm = app.leftArmDown
+        # else:
+        #     app.currentRightArm = app.rightArmDown
+        #     app.currentLeftArm = app.leftArmUp  
             
+
+
+                    
 def competitiveMode_timerFired(app):
     if app.start == True:
         # Since timerFired is set at 100, but only want every second, we compensate by substracting 0.1s
@@ -258,16 +280,37 @@ def competitiveMode_timerFired(app):
         else:
             dash.move(app, 10)
 
-    
+    # Move current coin
+    if app.currentCoin.y0 < app.height/2:
+        app.currentCoin.move(app, 6)
+
+    else:
+        # when in lower half
+        app.currentCoin.move(app, 10)
+        # check if coin in contact with arms
+        if ( app.currentCoin.inContact(app.leftArmUp) or
+            app.currentCoin.inContact(app.rightArmUp) ):
+            # display green screen
+            print('Touching detecting')
+            app.scoreCounter.value += 1
+            #reset
+            app.COINS.coins[0].__init__(app, 530, 300, 50)
+            app.COINS.coins[1].__init__(app, 630, 300, 50)
+            app.currentCoin = app.COINS.coins[randint(0, len(app.COINS.coins) - 1)]
+            # reset depending on type of coin
+            # if isinstance(app.currentCoin, CoinLeft):
+            #     app.currentCoin.__init__(app, 530, 300, 50)
+
+            # elif isinstance(app.currentCoin, CoinRight):
+            #     app.currentCoin.__init__(app, 630, 300, 50)
             
+                
 ########################################################################
         
 
 
 
 ################### INTERMEDIATE PAGE ################################
-
-
 
 def intermediateMode_redrawAll(app, canvas):
     # Main
@@ -277,14 +320,16 @@ def intermediateMode_redrawAll(app, canvas):
     
 
     # Draw Title:
-    canvas.create_text(app.width/2, app.height/10, text = "Today's goals: ",
+    canvas.create_text(app.width/2, app.height/10, text = "Today's goals",
                        font = 'Visby 60 bold', fill = 'lightgreen')
+
+    canvas.create_text(app.width/2, 1.8*app.height/10, text = "(Click on each category to type your info)",
+                       font = 'Visby 30 bold', fill = 'lightyellow')
     
     # Draw textBox for Goal Distance
     app.timeTextBox.draw(canvas)
     app.distanceTextBox.draw(canvas)
     app.heightTextBox.draw(canvas)
-
 
 
 
@@ -331,14 +376,25 @@ def intermediateMode_mousePressed(app, event):
         app.currentTextBox = app.heightTextBox # creating an alias on purpose\
 
 
+
         
 def intermediateMode_keyPressed(app, event):
     if event.key != 'Enter' and hasattr(app, 'currentTextBox'): #making sure app has currentTextBox attribute
+
+        # Add space
         if event.key == 'Space':
             app.currentTextBox.text += ' '
+    
+        # Delete
         elif ((event.key == 'Delete' or event.key == 'BackSpace')
               and app.currentTextBox.text[-1] != ':') : # making sure user can't delete full text box
             app.currentTextBox.text = app.currentTextBox.text[:-1]
+
+        # Checking for 'Enter' or 'Return'
+        elif event.key == 'Enter' or event.key == 'Return':
+            pass
+
+        # Add character to text
         else:
             app.currentTextBox.text += event.key
 
@@ -349,6 +405,7 @@ def intermediateMode_keyPressed(app, event):
 
 ################################ FOLLOW MODE #########################
 
+
 def followMode_redrawAll(app, canvas):
     # Main
     drawBackground(app, canvas, 'black')
@@ -356,9 +413,11 @@ def followMode_redrawAll(app, canvas):
 
     # Title
     canvas.create_text(app.width/2, app.height/10,
-                       text = "Start running \n we'll adjust your songs \n to your pace",
+                       text = "Start running \n we'll adjust your songs \n to your pace\n\n Click Enter when you've \n found your pace",
                        font = 'Visby 42 bold italic', fill = 'white')
 
+
+    
     
 def followMode_mousePressed(app, event):
     # If next button pressed:
@@ -388,7 +447,6 @@ def followMode_mousePressed(app, event):
         app.playlist = getAlteredSongs()
 
        
-
 ########################################################################
 
 
@@ -410,6 +468,7 @@ def competitiveFollowMode_redrawAll(app, canvas):
     app.leftBuildings.draw(app, canvas)
     app.rightBuildings.draw(app, canvas)
 
+    
     # Draw appropiate arms
     app.currentRightArm.draw(app, canvas)
     app.currentLeftArm.draw(app, canvas)
@@ -551,14 +610,16 @@ def congratulationsMode_mousePressed(app, event):
         app.mode = 'startMode' 
 
 
-#######################################################################
+####################################################################
 
     
 
     
 
-#################################### MAIN APP #####################################
+############################ MAIN APP ###############################
 def appStarted(app):
+    app.mode = 'startMode'
+    
     app.start = False
     app.isRightArmUp = False # boolean for movement of arms in 3D
     app.margin = 0
@@ -571,8 +632,6 @@ def appStarted(app):
 
     app.lx = app.width/2 # second 3D point
     app.ly = (1.2*app.height/4)
-    
-    app.mode = 'startMode'
 
     app.playlist = getOriginalSongs()
 
@@ -590,24 +649,24 @@ def appStarted(app):
     
     ########### CREATING ALL THE BUTTONS WE NEED #####################
       # Button to competitive
-    app.buttonToCompetitive = Button('Set Goal', 0.7, app, 'white', 'blue')
+    app.buttonToCompetitive = Button('Set Goal', 0.7, app, 'white', '', 'blue')
     app.buttonToCompetitive.setSize(1.5*app.width/8, app.height/1.3,
                                     3.6*app.width/8, 1.2*app.height/1.3)
 
       # Button to follow
-    app.buttonToFollow = Button('Adaptive', 0.32, app, 'white', 'blue')
+    app.buttonToFollow = Button('Adaptive', 0.32, app, 'white', '', 'blue')
     app.buttonToFollow.setSize(4.5*app.width/8, app.height/1.3,
                                6.5*app.width/8, 1.2*app.height/1.3)
     
       # Button to back
-    app.backButton = Button('BACK', 0.2, app, 'white', 'black')
-    app.backButton.setSize(0.88*app.width, 0.93*app.height,
-                           0.96*app.width, 0.96*app.height)
+    app.backButton = Button('BACK', 0.2, app, 'white', 'blue', 'blue')
+    app.backButton.setSize(0.88*app.width, 0.91*app.height,
+                                          0.98*app.width, 0.98*app.height)
 
       # Button intermediate to competitive
-    app.intermediateToCompetitive = Button('NEXT', 0.2, app, 'white', 'black')
-    app.intermediateToCompetitive.setSize(0.88*app.width, 0.93*app.height,
-                                          0.96*app.width, 0.96*app.height)
+    app.intermediateToCompetitive = Button('NEXT', 0.2, app, 'white', '', 'blue')
+    app.intermediateToCompetitive.setSize(0.88*app.width, 0.91*app.height,
+                                          0.98*app.width, 0.98*app.height)
 
       
     ##################################################################
@@ -621,31 +680,37 @@ def appStarted(app):
                             (app.width/2) + 100, 0.5*1.5*app.height/12)    
 
       # Distance Counter
-    app.distanceCounter = Counter('Distance: ', 0, 'lightblue', rgbString(0, 0, 100), app, 0.3, 'm')
-    app.distanceCounter.setSize(8*app.width/20, 1.4*app.height/18,
+    app.distanceCounter = Counter('Distance: ', 0, 'lightblue', rgbString(0, 0, 100), app, 0.34, 'm')
+    app.distanceCounter.setSize(6.5*app.width/20, 1.4*app.height/18,
                                 10*app.width/20, 2*app.height/18)    
 
       # Time Counter
-    app.timeCounter = Counter('Time: ', 100, 'lightblue', rgbString(0, 0, 100), app, 0.25, 's')
+    app.timeCounter = Counter('Time: ', 100, 'lightblue', rgbString(0, 0, 100), app, 0.23, 's')
     app.timeCounter.setSize(10.3*app.width/20, 1.4*app.height/18,
-                            12.1*app.width/20, 2*app.height/18)       
+                            12.8*app.width/20, 2*app.height/18)
+
+    # Score Counter
+    app.scoreCounter = Counter('Score: ', 0, 'lightblue', rgbString(0, 0, 100), app, 0.27, '')
+    app.scoreCounter.setSize(9*app.width/20, 2.2*app.height/18,
+                            11*app.width/20, 2.8*app.height/18)
     
     ##################################################################
 
 
     ################### CREATING ALL THE TEXTBOXES ##################
-    app.distanceTextBox = TextBox(app, "Distance goal: ", 0.7, 'lightblue', 'black')
+    app.distanceTextBox = TextBox(app, "Distance goal (meters) : ", 0.5, 'lightblue', 'black')
     app.distanceTextBox.setSize(1.5*app.width/20, app.height/3.5,
                                 1.5*10*app.width/20, 1.5*app.height/3.5)
 
     
-    app.timeTextBox = TextBox(app, "Time goal: ", 0.7, 'lightyellow', 'black')
+    app.timeTextBox = TextBox(app, "Time goal (minutes) : ", 0.5, 'lightyellow', 'black')
     app.timeTextBox.setSize(1.5*app.width/20, 1.5*app.height/3.5,
                             1.5*10*app.width/20, 1.4*1.5*app.height/3.5)
 
-    app.heightTextBox = TextBox(app, "Height: ", 0.7, 'lightgreen', 'black')
+    app.heightTextBox = TextBox(app, "Height (meters) : ", 0.5, 'lightgreen', 'black')
     app.heightTextBox.setSize(1.5*app.width/20, 2.2*app.height/3.5,
-                              1.5*10*app.width/20, 1.6*1.5*app.height/3.5)    
+                              1.5*10*app.width/20, 1.6*1.5*app.height/3.5)
+
     ################################################################
 
 
@@ -708,5 +773,13 @@ def appStarted(app):
     app.currentRightArm = app.rightArmUp
     app.currentLeftArm = app.leftArmDown
 
+
+
+    # Creating coins
+    app.COINS = AllCoins(app)
+    # app.currentCoin = app.COINS.coins[randint(0, len(app.COINS.coins) - 1)]
+    app.currentCoin = app.COINS.coins[0]
+    
+                
     
 runApp(width = 1160, height = 800)

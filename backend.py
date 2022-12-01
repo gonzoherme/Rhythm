@@ -132,9 +132,9 @@ class Song(object):
 # Citation to calculate person's stride from their height:
 # https://www.livestrong.com/article/438560-the-average-stride-length-in-running/
 def setRequiredParameters(app):
-    app.distanceMeters = float(app.distanceTextBox.text[15:]) # In meters!!
-    app.timeMinutes = int(app.timeTextBox.text[11: ]) # In minutes!!
-    app.heightMeters = float(app.heightTextBox.text[8: ])  # In meters!!
+    app.distanceMeters = float(app.distanceTextBox.text[25:]) # In meters!!
+    app.timeMinutes = int(app.timeTextBox.text[21: ]) # In minutes!!
+    app.heightMeters = float(app.heightTextBox.text[18: ])  # In meters!!
 
     app.timeCounter.value = app.timeMinutes*60
     app.strideMeters = app.heightMeters * 1.17
@@ -232,7 +232,9 @@ def key_pressed(event):
     elif event.char == 't':
         tap_estimate()
 
-
-
-
 #####################################################################
+
+
+
+
+
