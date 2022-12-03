@@ -86,14 +86,11 @@ def competitiveMode_redrawAll(app, canvas):
 
 
     # Draw coin
-    app.currentCoin.draw(app, canvas)
+    # app.currentCoin.draw(app, canvas)
     
     # Draw appropiate arms
     app.currentRightArm.draw(app, canvas)
     app.currentLeftArm.draw(app, canvas)
-    # app.rightArmUp.draw(app, canvas)
-    # app.leftArmUp.draw(app, canvas)
-    # app.leftArmUp.draw(app, canvas)
     
     # Draw buttons and counters
     app.backButton.draw(canvas)
@@ -170,17 +167,6 @@ def competitiveMode_keyPressed(app, event):
 
 
                 
-                          
-
-    # Press enter to start playing songs
-    if event.key == 'Enter' or event.key == 'Return':
-        # We start to play the songs, as well as start the countdown
-        app.start = True
-
-        # Play our playlist
-        # Shuffle the playlist
-        shuffle(app.playlist)
-        app.playlist[app.c].start()
     #play next song if music stops playing
     if not app.playlist[app.c].isPlaying():
         # change counter value (not commiting error of passing index)
@@ -245,8 +231,7 @@ def competitiveMode_keyPressed(app, event):
         # else:
         #     app.currentRightArm = app.rightArmDown
         #     app.currentLeftArm = app.leftArmUp  
-            
-
+                    
 
                     
 def competitiveMode_timerFired(app):
@@ -280,29 +265,24 @@ def competitiveMode_timerFired(app):
         else:
             dash.move(app, 10)
 
-    # Move current coin
-    if app.currentCoin.y0 < app.height/2:
-        app.currentCoin.move(app, 6)
+    # # Move current coin
+    # if app.currentCoin.y0 < app.height/2:
+    #     app.currentCoin.move(app, 6)
 
-    else:
-        # when in lower half
-        app.currentCoin.move(app, 10)
-        # check if coin in contact with arms
-        if ( app.currentCoin.inContact(app.leftArmUp) or
-            app.currentCoin.inContact(app.rightArmUp) ):
-            # display green screen
-            print('Touching detecting')
-            app.scoreCounter.value += 1
-            #reset
-            app.COINS.coins[0].__init__(app, 530, 300, 50)
-            app.COINS.coins[1].__init__(app, 630, 300, 50)
-            app.currentCoin = app.COINS.coins[randint(0, len(app.COINS.coins) - 1)]
-            # reset depending on type of coin
-            # if isinstance(app.currentCoin, CoinLeft):
-            #     app.currentCoin.__init__(app, 530, 300, 50)
+    # else:
+    #     # when in lower half
+    #     app.currentCoin.move(app, 10)
+    #     # check if coin in contact with arms
+    #     if ( app.currentCoin.inContact(app.leftArmUp) or
+    #         app.currentCoin.inContact(app.rightArmUp) ):
+    #         # display green screen
+    #         print('Touching detecting')
+    #         app.scoreCounter.value += 1
+    #         #reset
+    #         app.COINS.coins[0].__init__(app, 530, 300, 50)
+    #         app.COINS.coins[1].__init__(app, 630, 300, 50)
+    #         app.currentCoin = app.COINS.coins[randint(0, len(app.COINS.coins) - 1)]
 
-            # elif isinstance(app.currentCoin, CoinRight):
-            #     app.currentCoin.__init__(app, 630, 300, 50)
             
                 
 ########################################################################
@@ -350,11 +330,22 @@ def intermediateMode_mousePressed(app, event):
         app.mode = 'competitiveMode'
         app.timerDelay = 100
 
+
+
         # Changing songs to set pace
         for song in app.playlist:
             song.changeTempo(app.stepsPerMinute)
 
         app.playlist =  getAlteredSongs()
+
+        # START PLAYING SONGS
+        # We start to play the songs, as well as start the countdown
+        app.start = True
+
+        # Play our playlist
+        # Shuffle the playlist
+        shuffle(app.playlist)
+        app.playlist[app.c].start()
 
         
         
@@ -636,7 +627,7 @@ def appStarted(app):
     app.playlist = getOriginalSongs()
 
     # Loading gif
-    app.spritePhotoImages = loadAnimatedGif('images/blue_ncs.gif')
+    app.spritePhotoImages = loadAnimatedGif('images/green_ncs.gif')
     app.spriteCounter = 0
     app.timerDelay = 20
 
@@ -775,10 +766,10 @@ def appStarted(app):
 
 
 
-    # Creating coins
-    app.COINS = AllCoins(app)
-    # app.currentCoin = app.COINS.coins[randint(0, len(app.COINS.coins) - 1)]
-    app.currentCoin = app.COINS.coins[0]
+    # # Creating coins
+    # app.COINS = AllCoins(app)
+    # # app.currentCoin = app.COINS.coins[randint(0, len(app.COINS.coins) - 1)]
+    # app.currentCoin = app.COINS.coins[0]
     
                 
     
