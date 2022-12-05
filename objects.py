@@ -275,10 +275,6 @@ class roadDash():
             self.__init__(app, 'white', 'black',
                          300, 20, 40)
 
-        # print(f'roadDash(app, {self.fill}, {self.outlineColor}, {self.y}, {self.w}, {self.depth})')
-        # print('-----------------')        
-    
-
         
 class LeftBuildings():
     def __init__(self, app):

@@ -1,78 +1,23 @@
-_LEARNED FROM MEETING_
- - Remove gyroscope (too complicated, not enough time)
- - Add spacebar clicking algorithm TAP BPM algorithm
- - With OpenCV, you code a slider for speed, move with finger. Right faster, left slower.
- 
+_Welcome to Rhythm!_
+
+_Description_: Rhythm is an application devoted to aiding runners in maintaining a desired pace through the music they listen to.
+
+_Modes_: there are two available modes the user can use
+
+    /Set Goal/: the user enters his/her height, distance goal for the run, as well as time goal for the run. Rhythm will calculate the pace of the steps that the user will have to take while running to be able to meet the deesired goal. Then, it will speed up or slow down each song in the user's playlist in order to match it with the pace at which the user has to run.
+
+    /Adaptive/: the user runs at his/her own pace, which Rhythm will detect, and will ensuingly play songs in the playlist to match the user's running pace
+
+    
+_How to use Rhythm_:
+    Press 'Space' to simulate each step of your run
+    Use the 'Left' and 'Right' arrows to move your avatar
+    Click on one of Rhythm's modes: 'Set Goal' or 'Adaptive'
 
 
-Possibility: competitive, add a screen where you can see two people running from above, you and the AI, going at the rhythm you selected. If you click start, it starts !!! No need to update the speed of the songs real-time anymore!!! Draw sprites going around a round track, and your spacebar presses should move them proportionally to a step in real-life. Every like 8 seconds put on screen a message that fades in and out (advanced graphics) like: u got this!, keep running! The user enters distance and time. At the end, have two possible screen modes, congrats made it (effect of like georgia tech accepted page things stars falling around), or great effort, keep working.
+_Required modules_:
+     Audio: pydub, scipy.io, subprocess, librosa
+     Graphics: PIL, CMU 112 graphics, tkinter
+     Miscellaneous: random, os, math, time
 
-
- 
-FEATURES: USE LIBRARIES!
-
-- Have two modes:
----- Competition mode: you set a pace, and then the program makes the rhythm of all the songs go at that pace.
-
----- Your own pace mode: the program follows your pace, and makes the songs go at your pace
--> It knows the pace because you have a "giro" sensor on your phone and it detects by changes in directions.
-
-But for this project I will do it with the spacebar, and the rhythm you click the spacebar marks the rhythm of the song.
-
-
-Graphics: I want to have background black, add gif of NCS that goes to the rhythm of the song. Each gif is of different color for each level
-
-
-Bro: incredible idea: add a multiplayer, so that you can race / run with other people live, in the same time. So you both connect, and then you both run to the same song.
-
-
-
-* ESSENTIAL HINTS
-***** Make sure you use OOP
-
-I can make an object for a playlist
-And have each song be an object
-
-This allows you to modify aspets or characteristics super easily, just changing once in a class.
-
-
-
-
-***** Planning / Schedule
-Start planning how you're going to organize your code.
-
-_Now_: get functionality working (don't worry about how it looks)
-
-_Algorithmic research_:
-Cite pages with pseudo-code (not real code, because you won't get credit for it)
-Figure out what algorithm you need to use. (e.g. maze creating algorithm for pac-man)
-IDEA: algorithm to determine the bpm of the rhythm of space bar clicking.
-
-_Algorithmic complexity_:
-Be careful about efficiency.
-
-_Graphics_:
-AFTER getting all of it working, you start working on making it beautiful and professional/product/professional looking.
-
-
-***** Code organization
-Main file to run the main animation (import all other files into this file)
-Major classes in their own file
-Big modes in their own file
-General helper functions / baby modes in one file
-
-Keep good style and good comments to not get lost
-****** How to import a file
-*Have all the files in the same folder*
-
-import filename
-
-_If you want to use a function from the file, then you do:_
-filename.function_Name()
-
-To avoid using this, you can do:
-from filename import *
-function_Name()
-
-****** GIT
-
+    
