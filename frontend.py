@@ -5,10 +5,7 @@ from random import randint, shuffle
 from PIL import Image, ImageTk, ImageSequence
 from objects import *
 import time
-
-
-        
-        
+               
         
 # Citation: using idea of "modes" presented in the course notes
 ######################### START MODE ###########################
@@ -109,24 +106,24 @@ def competitiveMode_redrawAll(app, canvas):
     app.scoreCounter.draw(canvas)
 
 
-    # On / Off track messages
-    # Only draw every 10 seconds with app.timeRunning % 10 == 0
-    # try: print(app.timeRunning)e
-    # except: pass
+
 
     if app.showingMessage: drawUserMessage(app, canvas)
-    
+
+
               
     
-def competitiveMode_mousePressed(app, event):
-    print(event.x, event.y)
-    
+def competitiveMode_mousePressed(app, event):    
     # If back button pressed:
     app.backButton.isPressed(event, app)
     if app.backButton.pressed:
         time.sleep(0.1) # delay used to simulate button friction
         app.mode = 'startMode'
         app.timerDelay = 20
+
+        # stop playing
+        app.playlist[app.c].stop()
+
 
 
         
@@ -149,8 +146,8 @@ def competitiveMode_keyPressed(app, event):
                 
         # HEAD BOBBING DOWN
         # Road perspective
-        app.road.bottomLeftX -= 2
-        app.road.bottomRightX += 2
+        app.road.bottomLeftX -= 3
+        app.road.bottomRightX += 3
 
         # Background image perspective
         app.imageY += 1
@@ -205,8 +202,8 @@ def competitiveMode_keyReleased(app, event):
 
         
         # Road perspective
-        app.road.bottomLeftX += 2
-        app.road.bottomRightX -= 2
+        app.road.bottomLeftX += 3
+        app.road.bottomRightX -= 3
 
         # Background image perspective
         app.imageY -= 1
@@ -247,10 +244,7 @@ def competitiveMode_keyReleased(app, event):
         
             
 def competitiveMode_timerFired(app):
-    print(app.shakalaka)
-    print(app.timerDelay)
-    app.shakalaka += 1
-
+    app.miliseconds += 1
 
     
     if app.start == True:
@@ -293,14 +287,40 @@ def competitiveMode_timerFired(app):
         
 
     # MOVE CURRENT COIN
-    # app.currentCoin.move(app, app.coinDisplacement)
-    app.currentCoin.move(app, 16)
-    if ( app.currentCoin.inContact(app.leftArmUp) or
-         app.currentCoin.inContact(app.rightArmUp) ):
-        # increase score
-        app.scoreCounter.value += 1
-        # reset coins
-        app.COINS.resetCoins(app)
+    app.currentCoin.move(app, app.coinDisplacement)
+    # app.currentCoin.move(app, 16)
+
+    # check in contact right arm
+    if app.currentCoin.inContact(app.rightArmUp):
+        if app.currentRightArm == app.rightArmDown:
+            # decrease score
+            app.scoreCounter.value -= 1
+            # reset coins
+            app.COINS.resetCoins(app)
+
+        else:
+            # increase score
+            app.scoreCounter.value += 1
+            # reset coins
+            app.COINS.resetCoins(app)
+
+
+    # check in contact left arm
+    elif app.currentCoin.inContact(app.leftArmUp):
+        if app.currentLeftArm == app.leftArmDown:
+            # decrease score
+            app.scoreCounter.value -= 1
+            # reset coins
+            app.COINS.resetCoins(app)
+
+
+        else:
+            # increase score
+            app.scoreCounter.value += 1
+            # reset coins
+            app.COINS.resetCoins(app)
+
+
 
 
 
@@ -319,7 +339,7 @@ def competitiveMode_timerFired(app):
 
 
     # Determine if player is on track or off track
-    if float(app.distanceCounter.value) >= float(onTrackDistance(app)):
+    if float(app.distanceCounter.value) + 5 >= float(onTrackDistance(app)):
         app.on_track = True    
     else: app.on_track = False
         
@@ -328,17 +348,28 @@ def competitiveMode_timerFired(app):
     checkRunnerFinished(app)
 
 
-    # TESTING OUT MESSAGES
-    try:
-        if app.timeRunning % 10 == 0:
-            app.showingMessage = True
-            app.elapsed = time.time()
 
-            if app.elapsed < 3: pass
-            else:
-                app.elapsed = 0
-                app.showingMessage = False
-                
+    # On / Off track MESSAGES
+    # Only draw every 10 seconds with app.timeRunning % 10 == 0
+
+    if app.showingMessage == True:
+        if app.messageTimeCounter < 75: app.messageTimeCounter += 1
+        else:
+            app.showingMessage = False
+            app.messageTimeCounter = 0
+
+            # we set the current message to a random value
+            app.currentOnTrackMessage = app.onTrackMessages[randint(0, len(app.onTrackMessages)-1)]
+            app.currentOffTrackMessage = app.offTrackMessages[randint(0, len(app.offTrackMessages)-1)]
+
+    
+    
+    try:
+        if ( int(app.timeRunning) % 10 == 0 and
+             int(app.timeRunning) != app.lastInt ):
+            app.showingMessage = True
+            app.lastInt = int(app.timeRunning)
+            print(app.lastInt)
             
     except: pass
 
@@ -513,7 +544,108 @@ followMode_keyPressed = competitiveMode_keyPressed
 
 followMode_keyReleased = competitiveMode_keyReleased
         
-followMode_timerFired = competitiveMode_timerFired    
+def followMode_timerFired(app):
+    
+    if app.start == True:
+        # Since timerFired is set at 100, but only want every second, we compensate by substracting 0.1s
+        app.timeCounter.value -= 0.03
+        app.timeCounter.value = float(reduceDecimals(app.timeCounter.value))
+
+    # Gif
+    app.spriteCounter = (1 + app.spriteCounter) % len(app.spritePhotoImages)
+
+    # MAKE ALL MOVEMENTS SURROUNDINGS
+    # Move buildings: we simulate distance of further objects by moving them slower than the closer ones
+    for building in app.leftBuildings.buildings:
+        if building.y0 < app.height/2: building.move(app, 1.4)
+        else: building.move(app, 3)
+
+    for building in app.rightBuildings.buildings:
+        if building.y0 < app.height/2: building.move(app, 1.4)
+        else: building.move(app, 3)
+
+
+    # Move dashes on road:
+    for dash in app.road.roadDashes:
+        if dash.y0 < app.height/2.2: dash.move(app, 1)
+        else: dash.move(app, 1.5)
+
+
+
+    if app.spacePressed == True:
+        if app.counter <= 10:
+            app.counter += 1
+            
+            for dash in app.road.roadDashes:
+                if dash.y0 < app.height/2.2: dash.move(app, 2)
+                else: dash.move(app, 4)
+
+        else:
+            app.counter = 0
+            app.spacePressed = False        
+        
+
+    # MOVE CURRENT COIN
+    app.currentCoin.move(app, app.coinDisplacement)
+
+    # check in contact right arm
+    if app.currentCoin.inContact(app.rightArmUp):
+        if app.currentRightArm == app.rightArmDown:
+            # decrease score
+            app.scoreCounter.value -= 1
+            # reset coins
+            app.COINS.resetCoins(app)
+
+        else:
+            # increase score
+            app.scoreCounter.value += 1
+            # reset coins
+            app.COINS.resetCoins(app)
+
+
+    # check in contact left arm
+    elif app.currentCoin.inContact(app.leftArmUp):
+        if app.currentLeftArm == app.leftArmDown:
+            # decrease score
+            app.scoreCounter.value -= 1
+            # reset coins
+            app.COINS.resetCoins(app)
+
+
+        else:
+            # increase score
+            app.scoreCounter.value += 1
+            # reset coins
+            app.COINS.resetCoins(app)
+
+
+
+    # SONGS
+    # Play next song if music stops playing
+    if not app.playlist[app.c].isPlaying():
+        # change counter value (not commiting error of passing index)
+        if app.c <= len(app.playlist)-1:
+            app.c += 1
+            app.playlist[app.c].start()
+
+        else:
+            app.c = 0
+            app.playlist[app.c].start()
+
+
+
+    # Determine if player is on track or off track
+    if float(app.distanceCounter.value) + 5 >= float(onTrackDistance(app)):
+        app.on_track = True    
+    else: app.on_track = False
+        
+
+    # Check if runner made the objective
+    checkRunnerFinished(app)
+
+
+
+
             
 ###############################################################
 
@@ -530,12 +662,22 @@ def congratulationsMode_redrawAll(app, canvas):
     drawBackground(app, canvas, 'black')
     app.backButton.draw(canvas)
 
+
+
+    # Draw congratulations background
+    drawRoundedRectangle(0.1*app.width + 30, 0.21*app.height + 10,
+                         0.86*app.width + 10, 0.8*app.height + 10,
+                         'darkblue', 10, canvas)
+
+    drawRoundedRectangle(0.1*app.width +20, 0.21*app.height - 10,
+                         0.86*app.width - 10, 0.8*app.height - 10,
+                         'blue', 10, canvas)
     
     # Draw Title:
     canvas.create_text(app.width/2, app.height/2,
-                       text = "Congratulations!!! \n You achieved\n your goal!",
-                       font = 'Visby 60 bold',
-                       fill = 'lightgreen')
+                       text = 'Congratulations!!! \n  You achieved \n    your goal!',
+                       font = ("Comic Sans MS", 70, "bold"),
+                       fill = 'white')
 
 
 
@@ -547,6 +689,9 @@ def congratulationsMode_mousePressed(app, event):
         time.sleep(0.1) # delay used to simulate button friction
         app.mode = 'startMode'
         app.timerDelay = 20
+
+        # stop playing song
+        app.playlist[app.c].stop()
 
 
 ####################################################################
@@ -565,11 +710,21 @@ def improvementMode_redrawAll(app, canvas):
     app.backButton.draw(canvas)
 
 
+    # Draw improvement background
+    drawRoundedRectangle(0.1*app.width + 30, 0.21*app.height + 10,
+                         0.86*app.width + 10, 0.8*app.height + 10,
+                         'red', 10, canvas)
+
+    drawRoundedRectangle(0.1*app.width +20, 0.21*app.height - 10,
+                         0.86*app.width - 10, 0.8*app.height - 10,
+                         'orange', 10, canvas)
+
+    
     # Draw Title:
     canvas.create_text(app.width/2, app.height/2,
-                       text = "You didn't make your goal! \n But don't give up! \n Keep working at it!",
-                       font = 'Visby 60 bold',
-                       fill = 'orange')
+                       text = "You didn't make your goal! \n    But don't give up! \n   Keep working at it!",
+                       font = ("Comic Sans MS", 60, "bold"),
+                       fill = 'white')
 
 
 
@@ -580,6 +735,9 @@ def improvementMode_mousePressed(app, event):
         time.sleep(0.1) # delay used to simulate button friction
         app.mode = 'startMode'
         app.timerDelay = 20
+
+        # stop playing
+        app.playlist[app.c].stop()
 
 
 ####################################################################
@@ -620,9 +778,6 @@ def instructionsMode_redrawAll(app, canvas):
                        font = ("Comic Sans MS", 30, "bold"),
                        fill = 'lightgreen')
 
-    canvas.create_oval(app.TESTX + 10, app.height/2 + 10,
-                       app.TESTX - 10, app.height/2 - 10,
-                       fill = 'red')
 
 
 
@@ -634,26 +789,6 @@ def instructionsMode_mousePressed(app, event):
         app.mode = 'startMode'
         app.timerDelay = 20
 
-        
-
-def instructionsMode_keyReleased(app, event):
-    if event.key == 'Space':
-        # If already in process of moving, reset counter
-        if app.spacePressed == True: app.counter = 0
-        else: app.spacePressed = True
-
-
-        
-def instructionsMode_timerFired(app):
-    app.TESTX += 0.05
-    
-    if app.spacePressed == True:
-        if app.counter <= 10:
-            app.counter += 1
-            app.TESTX += 1
-        else:
-            app.counter = 0
-            app.spacePressed = False
         
 
 
@@ -670,12 +805,24 @@ def appStarted(app):
     app.TESTX = app.width/4
     app.mode = 'instructionsMode'
     setupInstructions(app)
-    app.showingMessage = False
 
+    # MESSAGES
+    app.showingMessage = False
+    app.messageTimeCounter = 0
+
+    # Set messages to user
+    app.onTrackMessages = ['Good Work!', 'Keep it going!', 'Nice pace!']
+    app.offTrackMessages = ["You're falling behind!", 'Try a bit harder!']
+
+    # Set current message
+    app.currentOnTrackMessage = app.onTrackMessages[randint(0, len(app.onTrackMessages)-1)]
+    app.currentOffTrackMessage = app.offTrackMessages[randint(0, len(app.offTrackMessages)-1)]
+
+    ##################
     
     app.imageX = app.width/2
     # app.imageY = 0.01*app.height
-    app.imageY = 0.2*app.height
+    app.imageY = 0.15*app.height
 
     
     app.start = False
@@ -695,6 +842,8 @@ def appStarted(app):
 
     app.playlist = getOriginalSongs()
 
+    app.lastInt = 0
+    
     # Loading gif
     app.spritePhotoImages = loadAnimatedGif('images/green_ncs.gif')
     app.spriteCounter = 0
@@ -799,7 +948,7 @@ def appStarted(app):
     # Citation: getpixel code obtained from 112 notes
     app.rgbForm = app.skyImage.convert('RGB')
     # app.r, app.g, app.b = app.rgbForm.getpixel((550, 580))
-    app.r, app.g, app.b = app.rgbForm.getpixel((800, 300))
+    app.r, app.g, app.b = app.rgbForm.getpixel((900, 380))
 
 
     # Create Arms

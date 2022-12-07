@@ -2,20 +2,21 @@ from pydub import AudioSegment # to play an audio file
 from pydub.playback import play # to play an audio file
 from scipy.io import wavfile
 from tkinter import *
-from random import shuffle
+from random import randint, shuffle
 import subprocess, threading, time
 import librosa # audio file management
 import os # to get names of files in a directory
 from math import sqrt
 
 
-#CITATIONS
+# CITING MULTIMEDIA USED
 # Music citation: all .wav files obtained from https://pixabay.com/music/search/wav/
 # https://www.ee.columbia.edu/~dpwe/sounds/music/africa-toto.wav
-# Gif citation: https://giphy.com/nocopyrightsounds
-# Sky image citation: https://www.google.com/search?q=png+sky&source=lnms&tbm=isch&sa=X&ved=2ahUKEwj_8pLyzb37AhXcElkFHXeiDQQQ_AUoAXoECAIQAw&biw=1440&bih=800&dpr=2#imgrc=tEtK2gCdyG43YM
-# https://wallhere.com/en/wallpaper/113569
 
+# Gif citation: https://giphy.com/nocopyrightsounds
+
+# Sky image citation: 
+# https://wallhere.com/en/wallpaper/113569
 
 
 
@@ -26,7 +27,6 @@ def getOriginalSongs():
     file_names = os.listdir(dir_path) # list file and directories
 
     # try to remove .DS_Store default mac file if there
-
     try: file_names.remove('.DS_Store') # remove mac os file
     except Exception: pass
 
@@ -128,8 +128,8 @@ class Song(object):
 
 
 ############ Pace calculator
-# Citation to calculate person's stride from their height:
-# https://www.livestrong.com/article/438560-the-average-stride-length-in-running/
+# Citation on ratio to calculate person's stride from their height:
+#https://www.livestrong.com/article/438560-the-average-stride-length-in-running/
 def setRequiredParameters(app):
     app.distanceMeters = float(app.distanceTextBox.text[25:]) # In meters!!
     app.timeMinutes = float(app.timeTextBox.text[21: ]) # In minutes!!
@@ -148,7 +148,7 @@ def setRequiredParameters(app):
 
  
 
-## Load Animated Gif
+# Load Animated Gif: citation, code from 112 Animations Part 4 Notes
 def loadAnimatedGif(path):
     # load first sprite outside of try/except to raise file-related exceptions
     spritePhotoImages = [ PhotoImage(file=path, format='gif -index 0') ]
@@ -159,7 +159,6 @@ def loadAnimatedGif(path):
                                                 format=f'gif -index {i}'))
             i += 1
         except Exception as e: return spritePhotoImages
-
 
 
     
@@ -239,10 +238,6 @@ def estimateClicks():
 
 ########## Transition to Competitive #######
 def transitionToCompetitive(app):
-    # Set messages to user
-    app.onTrackMessages = ['Good Work!', 'Keep it going!', 'Nice pace!']
-    app.offTrackMessages = ["You're falling behind!", 'Try a bit harder!']
-
     
     # Reset distance from previous session
     if app.distanceCounter.value != 0: app.distanceCounter.value = 0
@@ -259,11 +254,11 @@ def transitionToCompetitive(app):
     x1, x0, y1, y0 = 734, 630, 513, 300
     distanceOneCoinRun = sqrt((x1-x0)**2 + (y1-y0)**2) # point (x0,y0) to (x1,y1)
     print(f'Distance: {distanceOneCoinRun}')
-    timePerStep = 60/app.paceCounter.value
+    timePerStep = 60/app.paceCounter.value # seconds
     # print(f'Time: {timePerStep}')
-    app.shakalaka = 0
+    app.miliseconds = 0
     speedCoin = distanceOneCoinRun / timePerStep
-    app.coinDisplacement = 0.001*speedCoin
+    app.coinDisplacement = 0.0422*speedCoin
     print(app.coinDisplacement)
 
     
@@ -284,8 +279,9 @@ def transitionToCompetitive(app):
     app.playlist[app.c].start()
 
 
-
 ##############################################
+
+
 
 
 
@@ -297,7 +293,9 @@ def transitionToFollowMode(app):
         
         # Setup all the required data
         app.distanceMeters = 100000000
-        app.timeCounter.value = 1000000
+        app.timeMinutes = 1000000
+        app.timeSeconds = app.timeMinutes*60
+        app.timeCounter.value = 10000
         app.heightMeters = 1.83
         app.strideMeters = app.heightMeters * 1.17
         app.paceCounter.value = app.bpm_Tempo
@@ -307,6 +305,14 @@ def transitionToFollowMode(app):
         app.timerDelay = 1
 
 
+        # Setup coin sped
+        # Set the speed for our rhythm marking coins
+        x1, x0, y1, y0 = 734, 630, 513, 300
+        distanceOneCoinRun = sqrt((x1-x0)**2 + (y1-y0)**2) # point (x0,y0) to (x1,y1)
+        timePerStep = 60/app.paceCounter.value # seconds
+        app.miliseconds = 0
+        speedCoin = distanceOneCoinRun / timePerStep
+        app.coinDisplacement = 0.0422*speedCoin
 
         # Changing songs to set pace
         for song in app.playlist: song.changeTempo(app.paceCounter.value)
@@ -326,6 +332,7 @@ def transitionToFollowMode(app):
 ################################################
 
 
+
 # Calculate the distance if player was on track:
 def onTrackDistance(app):
     app.timeRunning = app.timeSeconds - app.timeCounter.value
@@ -335,23 +342,26 @@ def onTrackDistance(app):
 
 
 
+
+
 ############# DRAWING MESSAGES TO USER
 def drawUserMessage(app, canvas):               
     if app.on_track:
-        canvas.create_text(app.width/2, app.height/2,
-                           text = app.onTrackMessages[randint(0, len(app.onTrackMessages))],
-                           font = 'Visby 120 bold',
+        canvas.create_text(app.width/2, app.height/3,
+                           text = app.currentOnTrackMessage,
+                           font = ("Comic Sans MS", 80, "bold"),
                            fill = 'lightgreen')
 
     elif not app.on_track:
-        canvas.create_text(app.width/2, app.height/2,
-                           text = app.onTrackMessages[randint(0, len(app.onTrackMessages))],
-                           font = 'Visby 120 bold',
-                           fill = 'lightgreen') 
+        canvas.create_text(app.width/2, app.height/3,
+                           text = app.currentOffTrackMessage,
+                           font = ("Comic Sans MS", 90, "bold"),
+                           fill = 'red') 
         
             
 
 
+        
 ################# Check if runner finished
 def checkRunnerFinished(app):
     # Congrats! made the objective
