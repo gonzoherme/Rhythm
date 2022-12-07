@@ -95,11 +95,6 @@ class Button():
            
     # Citation: geometric intuition to round rectangle: https://mathworld.wolfram.com/RoundedRectangle.html     
     def draw(self, canvas):            
-        # Draw rectangle: ORIGINAL CODE
-        # canvas.create_rectangle(self.topLeftX, self.topLeftY,
-        #                         self.bottomRightX, self.bottomRightY,
-        #                         fill = self.fill, outline = self.outline,
-        #                         width = 8)
 
         r = 10
 
@@ -300,10 +295,6 @@ class roadDash():
                               fill = self.fill,
                               width = 0)
         
-        # canvas.create_oval(self.x1 + 5, self.y1+5,
-        #                    self.x1-5, self.y1-5,
-        #                    fill =  'red')
-
 
 
     def move(self, app, displacement):
@@ -369,7 +360,7 @@ class LeftBuilding():
 
         self.x0 = x0
         self.y0 = y0  
-        # print(f'x0: {self.x0}, y0: {self.y0}')
+
 
         self.x1 = self.x0
         self.y1 = self.y0 - self.h
@@ -400,11 +391,7 @@ class LeftBuilding():
 
         
         self.x4 = self.x1 + (self.depthHigher/sqrt(1+(self.lm**2)))
-        self.y4 = (self.lm * self.x4) + self.lb
-
-
-        # print(f'Building(app, {self.w}, {self.h}, {self.depthLower}, {self.x0}, {self.y0})')
-        # print('-----------------')        
+        self.y4 = (self.lm * self.x4) + self.lb        
 
 
         
@@ -427,11 +414,6 @@ class LeftBuilding():
                               fill = 'gray',
                               width = 0)
 
-
-        # canvas.create_oval(self.x0 + 5, self.y0+5,
-        #                    self.x0-5, self.y0-5,
-        #                    fill =  'red')
-        
 
 
     def move(self, app, displacement):
@@ -610,6 +592,9 @@ class Arm():
                               fill = f'pink',
                               width = 0)
 
+
+
+
 ######################### COIN CLASS ################################
 
 class AllCoins():
@@ -760,7 +745,3 @@ class CoinCenter(CoinLeft): # we only need to change 'move' function to move wit
 
             
 #####################################################################
-
-
-
-

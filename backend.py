@@ -63,7 +63,8 @@ def getAlteredSongs():
 
 
 ###################### SOUND CLASS ################
-# Citation: built upon code from cmu 112 Advanced Animations with Tkinter https://www.cs.cmu.edu/~112/notes/notes-animations-part4.html#imageMethods    
+# Citation: Song class
+# built upon code from cmu 112 Advanced Animations with Tkinter https://www.cs.cmu.edu/~112/notes/notes-animations-part4.html#imageMethods    
 
 class Song(object):
     def __init__(self, path):
@@ -262,8 +263,6 @@ def transitionToCompetitive(app):
     print(app.coinDisplacement)
 
     
-
-
     # Changing songs to set pace
     for song in app.playlist: song.changeTempo(app.stepsPerMinute)
 
@@ -339,8 +338,6 @@ def onTrackDistance(app):
     app.percentageTimeOfTotal = ( app.timeRunning / app.timeSeconds )
     on_track_distance = app.percentageTimeOfTotal * app.distanceMeters
     return on_track_distance
-
-
 
 
 
@@ -436,8 +433,4 @@ def drawRoundedRectangle(x0, y0, x1, y1, fill, r, canvas):
         # Top right oval
         canvas.create_oval(x1 + r, y0 + r,
                            x1 - r, y0 - r,
-                           fill = fill, outline = fill)        
-
-        
-
-
+                           fill = fill, outline = fill)

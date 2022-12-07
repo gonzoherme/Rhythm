@@ -105,14 +105,11 @@ def competitiveMode_redrawAll(app, canvas):
     app.timeCounter.draw(canvas)
     app.scoreCounter.draw(canvas)
 
-
-
-
+    # Draw message
     if app.showingMessage: drawUserMessage(app, canvas)
 
 
               
-    
 def competitiveMode_mousePressed(app, event):    
     # If back button pressed:
     app.backButton.isPressed(event, app)
@@ -126,12 +123,8 @@ def competitiveMode_mousePressed(app, event):
 
 
 
-        
-
 def competitiveMode_keyPressed(app, event):
     if event.key == 'Space':            
-
-        
         # Move surroinding objects faster if running faster
         # Move buildings: we simulate distance of further objects by moving them slower than the closer ones
         for building in app.leftBuildings.buildings:
@@ -142,7 +135,6 @@ def competitiveMode_keyPressed(app, event):
             if building.y0 < app.height/2: building.move(app, 1)
             else: building.move(app, 1)
 
-            
                 
         # HEAD BOBBING DOWN
         # Road perspective
@@ -151,8 +143,6 @@ def competitiveMode_keyPressed(app, event):
 
         # Background image perspective
         app.imageY += 1
-
-
 
 
     # Movement of player's arms
@@ -200,7 +190,6 @@ def competitiveMode_keyReleased(app, event):
         if app.spacePressed == True: app.counter = 0
         else: app.spacePressed = True
 
-        
         # Road perspective
         app.road.bottomLeftX += 3
         app.road.bottomRightX -= 3
@@ -217,7 +206,6 @@ def competitiveMode_keyReleased(app, event):
         for building in app.rightBuildings.buildings:
             if building.y0 < app.height/2: building.move(app, 4)
             else: building.move(app, 7)
-
 
 
         # Switching arm up
@@ -246,7 +234,6 @@ def competitiveMode_keyReleased(app, event):
 def competitiveMode_timerFired(app):
     app.miliseconds += 1
 
-    
     if app.start == True:
         # Since timerFired is set at 100, but only want every second, we compensate by substracting 0.1s
         app.timeCounter.value -= 0.03
@@ -320,9 +307,6 @@ def competitiveMode_timerFired(app):
             app.scoreCounter.value += 1
             # reset coins
             app.COINS.resetCoins(app)
-
-
-
 
 
     # SONGS
@@ -644,10 +628,6 @@ def followMode_timerFired(app):
     # Check if runner made the objective
     checkRunnerFinished(app)
 
-
-
-
-            
 ###############################################################
 
 
@@ -662,7 +642,6 @@ def congratulationsMode_redrawAll(app, canvas):
     # Main
     drawBackground(app, canvas, 'black')
     app.backButton.draw(canvas)
-
 
 
     # Draw congratulations background
@@ -681,8 +660,6 @@ def congratulationsMode_redrawAll(app, canvas):
                        fill = 'white')
 
 
-
-
 def congratulationsMode_mousePressed(app, event):        
     # If back button pressed:
     app.backButton.isPressed(event, app)
@@ -696,8 +673,6 @@ def congratulationsMode_mousePressed(app, event):
 
 
 ####################################################################
-
-
 
 
 
@@ -789,9 +764,6 @@ def instructionsMode_mousePressed(app, event):
         time.sleep(0.1) # delay used to simulate button friction
         app.mode = 'startMode'
         app.timerDelay = 20
-
-        
-
 
 ####################################################################
 
@@ -953,7 +925,7 @@ def appStarted(app):
 
 
     # Create Arms
-# Creating right Arm
+    # Creating right Arm
     # ORIGINAL ARM
     app.rightArmUp = Arm(app,
                    700, 600,
