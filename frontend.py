@@ -145,16 +145,6 @@ def competitiveMode_keyPressed(app, event):
             if building.y0 < app.height/2: building.move(app, 1)
             else: building.move(app, 1)
 
-
-        # Dashes
-        # for dash in app.road.roadDashes:
-        #     # movement
-        #     if dash.y0 < app.height/2: dash.move(app, 5)
-        #     else: dash.move(app, 10)
-
-        # for dash in app.road.roadDashes:                
-        #     if dash.y0 < app.height/2: dash.move(app, 3)
-        #     else: dash.move(app, 8)
             
                 
         # HEAD BOBBING DOWN
@@ -184,13 +174,6 @@ def competitiveMode_keyPressed(app, event):
             for i in range(len(app.leftArmDown.xi)):
                 app.leftArmDown.xi[i] -= 25
 
-        # if app.isRightArmUp == True:
-        #     app.currentRightArm = app.rightArmUp
-        #     app.currentLeftArm = app.leftArmDown
-        # else:
-        #     app.currentRightArm = app.rightArmDown
-        #     app.currentLeftArm = app.leftArmUp
-            
                 
                     
     elif event.key == 'Right':
@@ -207,14 +190,7 @@ def competitiveMode_keyPressed(app, event):
                 
             for i in range(len(app.leftArmDown.xi)):
                 app.leftArmDown.xi[i] += 25
-
             
-        # if app.isRightArmUp == True:
-        #     app.currentRightArm = app.rightArmUp
-        #     app.currentLeftArm = app.leftArmDown
-        # else:
-        #     app.currentRightArm = app.rightArmDown
-        #     app.currentLeftArm = app.leftArmUp  
                     
 
 
@@ -244,23 +220,6 @@ def competitiveMode_keyReleased(app, event):
         for building in app.rightBuildings.buildings:
             if building.y0 < app.height/2: building.move(app, 4)
             else: building.move(app, 7)
-
-
-        # Dashes
-        # for dash in app.road.roadDashes:
-            # # Make narrower
-            # dash.x0 -= 5
-            # dash.x1 -= 5
-            # dash.x3 += 5
-            # dash.x2 += 5
-            
-            
-            # Move faster
-            # Original
-            # if dash.y0 < app.height/2: dash.move(app, 20)
-            # else: dash.move(app, 30)
-
-
 
 
 
@@ -466,8 +425,9 @@ def intermediateMode_keyPressed(app, event):
     
 
 
-############## INTERMEDIATE FOLLOW MODE #########################
 
+
+############## INTERMEDIATE FOLLOW MODE #########################
 
 def intermediateFollowMode_redrawAll(app, canvas):
     # Background
@@ -490,9 +450,6 @@ def intermediateFollowMode_redrawAll(app, canvas):
                        font = ("Comic Sans MS", 75, "bold"),
                        fill = 'white')
     
-
-
-
     
     # Instructions
     canvas.create_text(app.width/2.5, 0.35*app.height,
@@ -537,16 +494,16 @@ def intermediateFollowMode_keyPressed(app, event):
     elif event.key == 'Enter' or event.key == 'Return':
         transitionToFollowMode(app)
     
-
-
-
        
 ###################################################
 
 
 
 
-############### FOLLOW  MODE #####################
+
+
+
+##### FOLLOW  MODE (alias functions in competitive mode) #######
 
 followMode_redrawAll = competitiveMode_redrawAll
 
@@ -556,11 +513,9 @@ followMode_keyPressed = competitiveMode_keyPressed
 
 followMode_keyReleased = competitiveMode_keyReleased
         
-followMode_timerFired = competitiveMode_timerFired
-
-    
+followMode_timerFired = competitiveMode_timerFired    
             
-##################################################
+###############################################################
 
 
 
@@ -585,7 +540,6 @@ def congratulationsMode_redrawAll(app, canvas):
 
 
 
-
 def congratulationsMode_mousePressed(app, event):        
     # If back button pressed:
     app.backButton.isPressed(event, app)
@@ -600,7 +554,10 @@ def congratulationsMode_mousePressed(app, event):
 
 
 
-################### CONGRATULATIONS MODE ###############
+
+
+
+################### IMPROVEMENT MODE ###############
 
 def improvementMode_redrawAll(app, canvas):
     # Main
@@ -626,6 +583,7 @@ def improvementMode_mousePressed(app, event):
 
 
 ####################################################################
+
 
 
 
@@ -685,6 +643,7 @@ def instructionsMode_keyReleased(app, event):
         else: app.spacePressed = True
 
 
+        
 def instructionsMode_timerFired(app):
     app.TESTX += 0.05
     
@@ -695,8 +654,7 @@ def instructionsMode_timerFired(app):
         else:
             app.counter = 0
             app.spacePressed = False
-    
-    
+        
 
 
 ####################################################################
@@ -843,7 +801,9 @@ def appStarted(app):
     # app.r, app.g, app.b = app.rgbForm.getpixel((550, 580))
     app.r, app.g, app.b = app.rgbForm.getpixel((800, 300))
 
-    # Creating right Arm
+
+    # Create Arms
+# Creating right Arm
     # ORIGINAL ARM
     app.rightArmUp = Arm(app,
                    700, 600,
@@ -883,10 +843,10 @@ def appStarted(app):
                    (app.width/2)-(700-(app.width/2)), app.height,
                    (app.width/2)-(670-(app.width/2)), 750)
 
-    # By defuault, we set right arm to be up and left arm down
+    # By default, we set right arm to be up and left arm down
     app.currentRightArm = app.rightArmUp
     app.currentLeftArm = app.leftArmDown
-
+    
 
     # # Creating coins
     app.COINS = AllCoins(app)
