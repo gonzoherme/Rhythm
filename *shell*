@@ -1,0 +1,42 @@
+(base) gonzalodehermenegildo@gonzalos-mac Rhythm % python3.10 frontend.py
+Loaded cmu_112_graphics version 0.9.2 (last updated 2022-03-29)
+Distance: 237.03375287076733
+19.172080044697232
+10
+  C-c C-cTraceback (most recent call last):
+  File "/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/cmu_112_graphics.py", line 382, in m
+    return appMethod(*args, **kwargs)
+  File "/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/cmu_112_graphics.py", line 587, in _mouseMotionWrapper
+    event.x = root.winfo_pointerx() - root.winfo_rootx()
+  File "/opt/homebrew/Cellar/python@3.10/3.10.8/Frameworks/Python.framework/Versions/3.10/lib/python3.10/tkinter/__init__.py", line 1169, in winfo_pointerx
+    self.tk.call('winfo', 'pointerx', self._w))
+Exception: can't invoke "winfo" command: application has been destroyed
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/cmu_112_graphics.py", line 382, in m
+    return appMethod(*args, **kwargs)
+  File "/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/cmu_112_graphics.py", line 587, in _mouseMotionWrapper
+    event.x = root.winfo_pointerx() - root.winfo_rootx()
+  File "/opt/homebrew/Cellar/python@3.10/3.10.8/Frameworks/Python.framework/Versions/3.10/lib/python3.10/tkinter/__init__.py", line 1169, in winfo_pointerx
+    self.tk.call('winfo', 'pointerx', self._w))
+_tkinter.TclError: can't invoke "winfo" command: application has been destroyed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.10/3.10.8/Frameworks/Python.framework/Versions/3.10/lib/python3.10/tkinter/__init__.py", line 1921, in __call__
+    return self.func(*args)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.8/Frameworks/Python.framework/Versions/3.10/lib/python3.10/tkinter/__init__.py", line 839, in callit
+    func(*args)
+  File "/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/cmu_112_graphics.py", line 427, in afterFnWrapper
+    afterFn()
+  File "/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/cmu_112_graphics.py", line 388, in m
+    app._canvas.create_rectangle(0, 0, app.width, app.height, fill=None, width=10, outline='red')
+  File "/Users/gonzalodehermenegildo/Desktop/Projects/Rhythm/cmu_112_graphics.py", line 221, in create_rectangle
+    def create_rectangle(self, *args, **kwargs): self.log('create_rectangle', args, kwargs); return super().create_rectangle(*args, **kwargs)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.8/Frameworks/Python.framework/Versions/3.10/lib/python3.10/tkinter/__init__.py", line 2835, in create_rectangle
+    return self._create('rectangle', args, kw)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.8/Frameworks/Python.framework/Versions/3.10/lib/python3.10/tkinter/__init__.py", line 2805, in _create
+    return self.tk.getint(self.tk.call(
+_tkinter.TclError: invalid command name ".!wrappedcanvas"
+(base) gonzalodehermenegildo@gonzalos-mac Rhythm % 

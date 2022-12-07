@@ -292,6 +292,7 @@ def competitiveMode_timerFired(app):
 
     # check in contact right arm
     if app.currentCoin.inContact(app.rightArmUp):
+        print('seeing')
         if app.currentRightArm == app.rightArmDown:
             # decrease score
             app.scoreCounter.value -= 1
@@ -845,7 +846,7 @@ def appStarted(app):
     app.lastInt = 0
     
     # Loading gif
-    app.spritePhotoImages = loadAnimatedGif('images/green_ncs.gif')
+    app.spritePhotoImages = loadAnimatedGif('images/blue_ncs.gif')
     app.spriteCounter = 0
 
 

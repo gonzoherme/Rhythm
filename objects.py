@@ -688,8 +688,7 @@ class CoinLeft():
     def inContact(self, arm):
         # if any two top points of arm within coin bounds 
         if ( (self.x0 - self.r) <= arm.x0 <= (self.x0 + self.r)  and  (self.y0 - self.r) < arm.y0 < (self.y0 + self.r) ):
-            return True
-        
+            return True        
         else:
             return False
         
