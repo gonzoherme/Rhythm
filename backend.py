@@ -6,6 +6,7 @@ from random import shuffle
 import subprocess, threading, time
 import librosa # audio file management
 import os # to get names of files in a directory
+from math import sqrt
 
 
 #CITATIONS
@@ -251,8 +252,21 @@ def transitionToCompetitive(app):
     
     time.sleep(0.1) # delay used to simulate button friction
     app.mode = 'competitiveMode'
-    app.timerDelay = 100
+    app.timerDelay = 1
 
+
+    # Set the speed for our rhythm marking coins
+    x1, x0, y1, y0 = 734, 630, 513, 300
+    distanceOneCoinRun = sqrt((x1-x0)**2 + (y1-y0)**2) # point (x0,y0) to (x1,y1)
+    print(f'Distance: {distanceOneCoinRun}')
+    timePerStep = 60/app.paceCounter.value
+    # print(f'Time: {timePerStep}')
+    app.shakalaka = 0
+    speedCoin = distanceOneCoinRun / timePerStep
+    app.coinDisplacement = 0.001*speedCoin
+    print(app.coinDisplacement)
+
+    
 
 
     # Changing songs to set pace
@@ -268,6 +282,8 @@ def transitionToCompetitive(app):
     # Shuffle the playlist
     shuffle(app.playlist)
     app.playlist[app.c].start()
+
+
 
 ##############################################
 
@@ -288,7 +304,7 @@ def transitionToFollowMode(app):
 
         time.sleep(0.1) # delay used to simulate button friction
         app.mode = 'followMode'
-        app.timerDelay = 100
+        app.timerDelay = 1
 
 
 
@@ -354,7 +370,6 @@ def checkRunnerFinished(app):
 # Setup instructions
 def setupInstructions(app):
     app.instructions = '''
-    Welcome to Rhythm!
 
     Rhythm is an application devoted to aiding runners in
     maintaining a desired pace through the music they listen to.
@@ -369,3 +384,49 @@ def setupInstructions(app):
     Click on 'Adaptive' to run at your own pace, and Rhythm will
     play songs in your playlist to match your running tempo
     '''
+
+
+
+### Drawing rounded rectangles helper function
+def drawRoundedRectangle(x0, y0, x1, y1, fill, r, canvas):
+        # Inner rectangle
+        canvas.create_rectangle(x0, y0,
+                                x1, y1,
+                                fill = fill, outline = fill,
+                                width = 0)
+
+        # Vertical outer rectangle
+        canvas.create_rectangle(x0, y0 - r,
+                                x1, y1 + (r+1),
+                                fill = fill, outline = fill,
+                                width = 0)
+
+        # Horizontal outer rectangle
+        canvas.create_rectangle(x0 - r, y0,
+                                x1 + (r+1), y1,
+                                fill = fill, outline = fill,
+                                width = 0)
+        
+        
+        # Draw round corners to smoothen out
+        # Top left oval
+        canvas.create_oval(x0 + r, y0 + r,
+                           x0 - r, y0 - r,
+                           fill = fill, outline = fill)
+
+        # Bottom right oval
+        canvas.create_oval(x1 + r, y1 + r,
+                           x1 - r, y1 - r,
+                           fill = fill, outline = fill)
+        # Bottom left oval
+        canvas.create_oval(x0 + r, y1 + r,
+                           x0 - r, y1 - r,
+                           fill = fill, outline = fill)
+        
+        # Top right oval
+        canvas.create_oval(x1 + r, y0 + r,
+                           x1 - r, y0 - r,
+                           fill = fill, outline = fill)        
+
+        
+

@@ -16,15 +16,27 @@ def startMode_redrawAll(app, canvas):
 
     drawBackground(app, canvas, 'black')
     # Title
-    canvas.create_text(app.width/2, app.height/10,
-                       text = 'rhythm', font = 'Visby 100 bold',
+    canvas.create_text(app.width/2, app.height/8,
+                       text = 'rhythm',
+                       font = ("Comic Sans MS", 130, "bold"),
                        fill = 'lightblue')
 
+
+    # Draw competitive button background
+    drawRoundedRectangle(1.5*app.width/8 + 15, app.height/1.3 + 10,
+                         3.6*app.width/8 + 15, 1.2*app.height/1.3 + 10,
+                         'lightblue', 10, canvas)
 
     
     # Draw to competitive button
     app.buttonToCompetitive.draw(canvas)
 
+
+    # Draw to follow button background
+    drawRoundedRectangle(4.5*app.width/8 + 15, app.height/1.3 + 10,
+                         6.5*app.width/8 + 15, 1.2*app.height/1.3 + 10,
+                         'lightblue', 10, canvas)
+    
     # Draw to follow button
     app.buttonToFollow.draw(canvas)
 
@@ -32,7 +44,7 @@ def startMode_redrawAll(app, canvas):
     # Draw NCS gif
     photoImage = app.spritePhotoImages[app.spriteCounter]
     # photoImage = app.scaleImage(photoImage, 0.5)
-    canvas.create_image(app.width/2, 0.9 *app.height/2, image=photoImage)
+    canvas.create_image(app.width/2, 1.015*app.height/2, image=photoImage)
     
     
 
@@ -49,6 +61,9 @@ def startMode_mousePressed(app, event):
     app.buttonToFollow.isPressed(event, app)
     if app.buttonToFollow.pressed:
         time.sleep(0.1) # delay used to simulate button friction
+
+        # reset values
+        app.scoreCounter.value = 0
         app.mode = 'intermediateFollowMode'
 
 
@@ -96,17 +111,16 @@ def competitiveMode_redrawAll(app, canvas):
 
     # On / Off track messages
     # Only draw every 10 seconds with app.timeRunning % 10 == 0
-    # try: print(app.timeRunning)
+    # try: print(app.timeRunning)e
     # except: pass
 
     if app.showingMessage: drawUserMessage(app, canvas)
     
-
-             
-    
-    
+              
     
 def competitiveMode_mousePressed(app, event):
+    print(event.x, event.y)
+    
     # If back button pressed:
     app.backButton.isPressed(event, app)
     if app.backButton.pressed:
@@ -120,6 +134,7 @@ def competitiveMode_mousePressed(app, event):
 def competitiveMode_keyPressed(app, event):
     if event.key == 'Space':            
 
+        
         # Move surroinding objects faster if running faster
         # Move buildings: we simulate distance of further objects by moving them slower than the closer ones
         for building in app.leftBuildings.buildings:
@@ -132,19 +147,24 @@ def competitiveMode_keyPressed(app, event):
 
 
         # Dashes
-        for dash in app.road.roadDashes:
-            # movement
-            if dash.y0 < app.height/2: dash.move(app, 5)
-            else: dash.move(app, 10)
-                
+        # for dash in app.road.roadDashes:
+        #     # movement
+        #     if dash.y0 < app.height/2: dash.move(app, 5)
+        #     else: dash.move(app, 10)
+
+        # for dash in app.road.roadDashes:                
+        #     if dash.y0 < app.height/2: dash.move(app, 3)
+        #     else: dash.move(app, 8)
+            
                 
         # HEAD BOBBING DOWN
         # Road perspective
-        app.road.bottomLeftX -= 3.8
-        app.road.bottomRightX += 3.8
+        app.road.bottomLeftX -= 2
+        app.road.bottomRightX += 2
 
         # Background image perspective
-        app.imageY += 2
+        app.imageY += 1
+
 
 
 
@@ -198,20 +218,22 @@ def competitiveMode_keyPressed(app, event):
                     
 
 
-
-    
-
 def competitiveMode_keyReleased(app, event):
     if event.key == 'Space':
         # HEAD BOBBING UP
 # When your heads goes up, you go faster, so buildings and dashes approach the user faster than they would usually. So we add more movement to them.
 
+        # If already in process of moving, reset counter
+        if app.spacePressed == True: app.counter = 0
+        else: app.spacePressed = True
+
+        
         # Road perspective
-        app.road.bottomLeftX += 3.8
-        app.road.bottomRightX -= 3.8
+        app.road.bottomLeftX += 2
+        app.road.bottomRightX -= 2
 
         # Background image perspective
-        app.imageY -= 2        
+        app.imageY -= 1
 
         
         # Buildings        
@@ -225,7 +247,7 @@ def competitiveMode_keyReleased(app, event):
 
 
         # Dashes
-        for dash in app.road.roadDashes:
+        # for dash in app.road.roadDashes:
             # # Make narrower
             # dash.x0 -= 5
             # dash.x1 -= 5
@@ -234,8 +256,12 @@ def competitiveMode_keyReleased(app, event):
             
             
             # Move faster
-            if dash.y0 < app.height/2: dash.move(app, 20)
-            else: dash.move(app, 30)
+            # Original
+            # if dash.y0 < app.height/2: dash.move(app, 20)
+            # else: dash.move(app, 30)
+
+
+
 
 
         # Switching arm up
@@ -261,10 +287,16 @@ def competitiveMode_keyReleased(app, event):
     
         
             
-def competitiveMode_timerFired(app):        
+def competitiveMode_timerFired(app):
+    print(app.shakalaka)
+    print(app.timerDelay)
+    app.shakalaka += 1
+
+
+    
     if app.start == True:
         # Since timerFired is set at 100, but only want every second, we compensate by substracting 0.1s
-        app.timeCounter.value -= 0.1
+        app.timeCounter.value -= 0.03
         app.timeCounter.value = float(reduceDecimals(app.timeCounter.value))
 
     # Gif
@@ -273,36 +305,44 @@ def competitiveMode_timerFired(app):
     # MAKE ALL MOVEMENTS SURROUNDINGS
     # Move buildings: we simulate distance of further objects by moving them slower than the closer ones
     for building in app.leftBuildings.buildings:
-        if building.y0 < app.height/2: building.move(app, 2)
-        else: building.move(app, 4)
+        if building.y0 < app.height/2: building.move(app, 1.4)
+        else: building.move(app, 3)
 
     for building in app.rightBuildings.buildings:
-        if building.y0 < app.height/2: building.move(app, 2)
-        else: building.move(app, 4)
+        if building.y0 < app.height/2: building.move(app, 1.4)
+        else: building.move(app, 3)
 
 
     # Move dashes on road:
     for dash in app.road.roadDashes:
-        if dash.y0 < app.height/2: dash.move(app, 3)
-        else: dash.move(app, 8)
+        if dash.y0 < app.height/2.2: dash.move(app, 1)
+        else: dash.move(app, 1.5)
 
-    # Move current coin
-    if app.currentCoin.y0 < app.height/2:
-        app.currentCoin.move(app, 6)
 
-    else:
-        # when in lower half
-        app.currentCoin.move(app, 10)
-        # check if coin in contact with arms
-        if ( app.currentCoin.inContact(app.leftArmUp) or
-            app.currentCoin.inContact(app.rightArmUp) ):
-            # display green screen
-            print('Touching detecting')
-            app.scoreCounter.value += 1
-            #reset
-            app.COINS.coins[0].__init__(app, 530, 300, 50)
-            app.COINS.coins[1].__init__(app, 630, 300, 50)
-            app.currentCoin = app.COINS.coins[randint(0, len(app.COINS.coins) - 1)]
+
+    if app.spacePressed == True:
+        if app.counter <= 10:
+            app.counter += 1
+            
+            for dash in app.road.roadDashes:
+                if dash.y0 < app.height/2.2: dash.move(app, 2)
+                else: dash.move(app, 4)
+
+        else:
+            app.counter = 0
+            app.spacePressed = False        
+        
+
+    # MOVE CURRENT COIN
+    # app.currentCoin.move(app, app.coinDisplacement)
+    app.currentCoin.move(app, 16)
+    if ( app.currentCoin.inContact(app.leftArmUp) or
+         app.currentCoin.inContact(app.rightArmUp) ):
+        # increase score
+        app.scoreCounter.value += 1
+        # reset coins
+        app.COINS.resetCoins(app)
+
 
 
     # SONGS
@@ -339,14 +379,10 @@ def competitiveMode_timerFired(app):
             else:
                 app.elapsed = 0
                 app.showingMessage = False
-            
-
-            
-            print('Getting here')
+                
             
     except: pass
-            
-                
+
 ########################################################################
         
 
@@ -357,6 +393,8 @@ def competitiveMode_timerFired(app):
 def intermediateMode_redrawAll(app, canvas):
     # Main
     drawBackground(app, canvas, 'black')
+
+    
     # Draw next button
     app.intermediateToCompetitive.draw(canvas)
     
@@ -364,12 +402,13 @@ def intermediateMode_redrawAll(app, canvas):
     # Draw Title:
     canvas.create_text(app.width/2, app.height/10,
                        text = "Today's goals",
-                       font = 'Visby 60 bold',
+                       font = ("Comic Sans MS", 70, "bold"),
                        fill = 'lightgreen')
 
     canvas.create_text(app.width/2, 1.8*app.height/10,
                        text = "(Click on each category to type your info)",
-                       font = 'Visby 30 bold', fill = 'lightyellow')
+                       font = ("Comic Sans MS", 30, "bold"),
+                       fill = 'lightyellow')
     
     # Draw textBox for Goal Distance
     app.timeTextBox.draw(canvas)
@@ -409,22 +448,18 @@ def intermediateMode_mousePressed(app, event):
 
         
 def intermediateMode_keyPressed(app, event):
-    if event.key != 'Enter' and hasattr(app, 'currentTextBox'): #making sure app has currentTextBox attribute
+    if event.key != 'Enter' and hasattr(app, 'currentTextBox'): # making sure app has currentTextBox attribute
 
-        # Add space
-        if event.key == 'Space':
-            app.currentTextBox.text += ' '
-    
+        # Only allow digits: making sure user can't delete full text box
+        if ( ( event.key in {'0','1','2','3','4','5','6','7','8','9'} 
+               or event.key == '.' )
+             and len(app.currentTextBox.text) < 31 ):
+            app.currentTextBox.text += event.key
+
         # Delete
-        elif ((event.key == 'Delete' or event.key == 'BackSpace')
-              and app.currentTextBox.text[-1] != ':') : # making sure user can't delete full text box
+        elif ( (event.key == 'Delete' or event.key == 'BackSpace')
+            and app.currentTextBox.text[-1] != ' ' ): 
             app.currentTextBox.text = app.currentTextBox.text[:-1]
-
-        # Checking for 'Enter' or 'Return'
-        elif event.key == 'Enter' or event.key == 'Return': pass
-
-        # Add character to text
-        else: app.currentTextBox.text += event.key
 
 
 ####################################################################
@@ -438,27 +473,57 @@ def intermediateFollowMode_redrawAll(app, canvas):
     # Background
     drawBackground(app, canvas, 'black')
 
-    # Title and instructions
-    canvas.create_text(app.width/2.3, app.height/6,
-                       text = '''
-                       Begin running by clicking the space bar
+    # TITLE
 
-                       Rhythm will calculate and display your current pace
+    # Title background
+    drawRoundedRectangle(0.2*app.width + 20, 0.6*app.height + 20,
+                         0.8*app.width + 20, 0.8*app.height + 20,
+                         'yellow', 10, canvas)
+    
+    drawRoundedRectangle(0.3*app.width, 0.05*app.height,
+                         0.7*app.width, 0.2*app.height,
+                         'blue', 10, canvas)
+    
+    # Title text
+    canvas.create_text(app.width/2, 0.117*app.height,
+                       text = 'Adaptive',
+                       font = ("Comic Sans MS", 75, "bold"),
+                       fill = 'white')
+    
 
-                       Click 'Enter' when you have found a pace you are comfortable with''',
-                       font = 'Visby 30 bold',
-                       fill = 'lightblue')
 
-    # Draw clicks per second on screen
-
-    try: text = f'Current pace: {app.bpm_Tempo}'
-    except: text = f'Current pace: 0'
 
     
-    canvas.create_text(app.width/2, 2.5*app.height/4,
+    # Instructions
+    canvas.create_text(app.width/2.5, 0.35*app.height,
+                       text = '''
+                       1) Begin running by clicking the space bar
+                       2) Rhythm will calculate and display your current pace
+                       3) Click 'Enter' when you have found a pace you are
+                       comfortable with''',
+                       font = ("Comic Sans MS", 30, "bold"),
+                       fill = 'lightgreen')
+
+
+    
+    # Clicks per second
+    drawRoundedRectangle(0.2*app.width + 20, 0.6*app.height + 20,
+                         0.8*app.width + 20, 0.8*app.height + 20,
+                         'yellow', 10, canvas)
+    
+    drawRoundedRectangle(0.2*app.width, 0.6*app.height,
+                             0.8*app.width, 0.8*app.height,
+                             'lightyellow', 10, canvas)
+
+
+        
+    try: text = f'Live pace: {app.bpm_Tempo}'
+    except: text = f'Live pace: 0'
+    
+    canvas.create_text(app.width/2, 0.7*app.height,
                        text = text,
-                       font = 'Visby 75 bold ',
-                       fill = 'lightyellow')
+                       font = ("Comic Sans MS", 75, "bold"),
+                       fill = 'green')
 
 
 
@@ -569,16 +634,37 @@ def improvementMode_mousePressed(app, event):
 
 def instructionsMode_redrawAll(app, canvas):
     # Main
-    drawBackground(app, canvas, 'lightblue')
+    drawBackground(app, canvas, 'black')
     app.instructionsToStart.draw(canvas)
 
+
+    
     # Draw Title:
+    canvas.create_text(app.width/2, 0.1*app.height,
+                       text = 'Welcome to Rhythm!',
+                       font = ("Comic Sans MS", 80, "bold"),
+                       fill = 'lightgreen')
+
+
+
+    # Draw instructions background
+    drawRoundedRectangle(0.1*app.width + 30, 0.21*app.height + 10,
+                         0.92*app.width + 10, 0.85*app.height + 10,
+                         'darkblue', 10, canvas)
+
+    drawRoundedRectangle(0.1*app.width +20, 0.21*app.height - 10,
+                         0.92*app.width - 10, 0.85*app.height - 10,
+                         'blue', 10, canvas)
+    
+    # Draw instructions
     canvas.create_text(app.width/2, app.height/2,
                        text = app.instructions,
-                       font = 'Visby 30 bold',
-                       fill = 'black')
+                       font = ("Comic Sans MS", 30, "bold"),
+                       fill = 'lightgreen')
 
-
+    canvas.create_oval(app.TESTX + 10, app.height/2 + 10,
+                       app.TESTX - 10, app.height/2 - 10,
+                       fill = 'red')
 
 
 
@@ -589,6 +675,28 @@ def instructionsMode_mousePressed(app, event):
         time.sleep(0.1) # delay used to simulate button friction
         app.mode = 'startMode'
         app.timerDelay = 20
+
+        
+
+def instructionsMode_keyReleased(app, event):
+    if event.key == 'Space':
+        # If already in process of moving, reset counter
+        if app.spacePressed == True: app.counter = 0
+        else: app.spacePressed = True
+
+
+def instructionsMode_timerFired(app):
+    app.TESTX += 0.05
+    
+    if app.spacePressed == True:
+        if app.counter <= 10:
+            app.counter += 1
+            app.TESTX += 1
+        else:
+            app.counter = 0
+            app.spacePressed = False
+    
+    
 
 
 ####################################################################
@@ -601,15 +709,23 @@ def instructionsMode_mousePressed(app, event):
 
 ############################ MAIN APP ###############################
 def appStarted(app):
+    app.TESTX = app.width/4
     app.mode = 'instructionsMode'
     setupInstructions(app)
     app.showingMessage = False
+
+    
     app.imageX = app.width/2
-    app.imageY = 0.01*app.height
+    # app.imageY = 0.01*app.height
+    app.imageY = 0.2*app.height
+
+    
     app.start = False
     app.isRightArmUp = False # boolean for movement of arms in 3D
     app.margin = 0
-    app.colors = ['green', 'gray', 'yellow', 'blue', 'orange']
+    app.colors = ['green', 'purple', 'pink', 'red',
+                  'yellow', 'blue', 'orange']
+    app.currentColor = app.colors[randint(0,len(app.colors)-1)]
 
     app.c = 0 # index of the song playlist 
     
@@ -622,44 +738,47 @@ def appStarted(app):
     app.playlist = getOriginalSongs()
 
     # Loading gif
-    app.spritePhotoImages = loadAnimatedGif('images/blue_ncs.gif')
+    app.spritePhotoImages = loadAnimatedGif('images/green_ncs.gif')
     app.spriteCounter = 0
-    app.timerDelay = 20
 
+
+    ######## EDITS TESTING COUNTER
+    app.timerDelay = 0
+    app.counter = 0
+    app.spacePressed = False
 
     # Loading image of sky
-    app.skyImage = app.loadImage('images/sky2 copy.jpg')
-    app.skyImage = app.scaleImage(app.skyImage, 1.2) # rescale
+    app.skyImage = app.loadImage('images/sky2 copy.png')
+    app.skyImage = app.scaleImage(app.skyImage, 0.73) # rescale
 
     
     
     ########### CREATING ALL THE BUTTONS WE NEED #####################
       # Button to competitive
-    app.buttonToCompetitive = Button('Set Goal', 0.7, app,
-                                     'white', '', 'blue')
+    app.buttonToCompetitive = Button('Set Goal', 0.85, app,
+                                     'white', 'blue', 'blue')
     app.buttonToCompetitive.setSize(1.5*app.width/8, app.height/1.3,
                                     3.6*app.width/8, 1.2*app.height/1.3)
 
       # Button to follow
-    app.buttonToFollow = Button('Adaptive', 0.32, app,
-                                'white', '', 'blue')
+    app.buttonToFollow = Button('Adaptive', 0.4, app,
+                                'white', 'blue', 'blue')
     app.buttonToFollow.setSize(4.5*app.width/8, app.height/1.3,
                                6.5*app.width/8, 1.2*app.height/1.3)
     
       # Button to back
     app.backButton = Button('BACK', 0.2, app, 'white', 'blue', 'blue')
-    app.backButton.setSize(0.88*app.width, 0.91*app.height,
-                                          0.98*app.width, 0.98*app.height)
-
+    app.backButton.setSize(0.87*app.width, 0.90*app.height,
+                           0.97*app.width, 0.96*app.height)
       # Button intermediate to competitive
-    app.intermediateToCompetitive = Button('NEXT', 0.2, app, 'white', '', 'blue')
-    app.intermediateToCompetitive.setSize(0.88*app.width, 0.90*app.height,
-                                          0.98*app.width, 0.97*app.height)
+    app.intermediateToCompetitive = Button('NEXT', 0.2, app, 'white', 'blue', 'blue')
+    app.intermediateToCompetitive.setSize(0.87*app.width, 0.90*app.height,
+                                          0.97*app.width, 0.96*app.height)
 
     # Button instructions to start
-    app.instructionsToStart = Button('NEXT', 0.2, app, 'black', '', 'black')
-    app.instructionsToStart.setSize(0.88*app.width, 0.90*app.height,
-                                          0.98*app.width, 0.97*app.height)
+    app.instructionsToStart = Button('NEXT', 0.2, app, 'white', 'blue', 'blue')
+    app.instructionsToStart.setSize(0.88*app.width, 0.91*app.height,
+                                    0.98*app.width, 0.97*app.height)
 
       
     ##################################################################
@@ -668,7 +787,7 @@ def appStarted(app):
     
     ########### CREATING ALL THE COUNTERS WE NEED #####################
       # Pace Counter
-    app.paceCounter = Counter('Pace: ', 1, 'black', 'lightblue', app, 0.5, '')
+    app.paceCounter = Counter('Pace: ', 1, 'black', 'lightblue', app, 0.42, '')
     app.paceCounter.setSize((app.width/2) - 100, 0.5*app.height/20,
                             (app.width/2) + 100, 0.5*1.5*app.height/12)    
 
@@ -691,18 +810,18 @@ def appStarted(app):
 
 
     ################### CREATING ALL THE TEXTBOXES ##################
-    app.distanceTextBox = TextBox(app, "Distance goal (meters) : ", 0.5, 'lightblue', 'black')
-    app.distanceTextBox.setSize(1.5*app.width/20, app.height/3.5,
-                                1.5*10*app.width/20, 1.5*app.height/3.5)
+    app.distanceTextBox = TextBox(app, "Distance goal (meters) : ", 0.45, 'blue', 'black')
+    app.distanceTextBox.setSize(0.1*app.width, 0.28*app.height,
+                                0.9*app.width, 0.38*app.height)
 
     
-    app.timeTextBox = TextBox(app, "Time goal (minutes) : ", 0.5, 'lightyellow', 'black')
-    app.timeTextBox.setSize(1.5*app.width/20, 1.5*app.height/3.5,
-                            1.5*10*app.width/20, 1.4*1.5*app.height/3.5)
+    app.timeTextBox = TextBox(app, "Time goal (minutes) : ", 0.45, 'blue', 'black')
+    app.timeTextBox.setSize(0.1*app.width, 0.48*app.height,
+                            0.9*app.width, 0.58*app.height)
 
-    app.heightTextBox = TextBox(app, "Height (meters) : ", 0.5, 'lightgreen', 'black')
-    app.heightTextBox.setSize(1.5*app.width/20, 2.2*app.height/3.5,
-                              1.5*10*app.width/20, 1.6*1.5*app.height/3.5)
+    app.heightTextBox = TextBox(app, "Height (meters) : ", 0.5, 'blue', 'black')
+    app.heightTextBox.setSize(0.1*app.width, 0.68*app.height,
+                              0.9*app.width, 0.78*app.height)
 
     ################################################################
 
@@ -721,7 +840,8 @@ def appStarted(app):
     # Setting up color for floor of floor next to road
     # Citation: getpixel code obtained from 112 notes
     app.rgbForm = app.skyImage.convert('RGB')
-    app.r, app.g, app.b = app.rgbForm.getpixel((550, 580))  
+    # app.r, app.g, app.b = app.rgbForm.getpixel((550, 580))
+    app.r, app.g, app.b = app.rgbForm.getpixel((800, 300))
 
     # Creating right Arm
     # ORIGINAL ARM
@@ -768,12 +888,11 @@ def appStarted(app):
     app.currentLeftArm = app.leftArmDown
 
 
-
     # # Creating coins
     app.COINS = AllCoins(app)
-    app.currentCoin = app.COINS.coins[randint(0, len(app.COINS.coins) - 1)]
-    # app.currentCoin = app.COINS.coins[0]
-    
+    app.coinIndex = 0
+    app.currentCoin = app.COINS.coins[app.coinIndex]
+
                 
     
 runApp(width = 1160, height = 800)

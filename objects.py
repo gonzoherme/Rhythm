@@ -1,5 +1,6 @@
 from math import sqrt
 from random import randint
+from backend import drawRoundedRectangle
 ######################### COUNTERS ##############################
 
 # Button built basing upon the button presented in Mini-Lecture Advanced Tkinter
@@ -40,8 +41,8 @@ class Counter():
         canvas.create_text(self.centerCounterX, self.centerCounterY,
                            text = self.magnitude + f'{self.value} {self.unit}',
                            fill = self.textColour,
-                           font = f'Visby {self.fontSize} bold')
-                
+                           font = ("Comic Sans MS", self.fontSize, "bold"))
+
 #######################################################################
 
 
@@ -79,9 +80,6 @@ class Button():
         # font
         self.fontSize = int(0.76*self.buttonNum*(self.centerButtonX/5))
 
-        # # coordinates
-        # self.coordinates = [self.topLeftX, self.topLeftY, self.bottomRightX, self.bottomRightY]
-
 
     def isPressed(self, event, app):
         # Button Changing State
@@ -95,18 +93,62 @@ class Button():
             # self.fill = self.fill
 
            
-        
+    # Citation: geometric intuition to round rectangle: https://mathworld.wolfram.com/RoundedRectangle.html     
     def draw(self, canvas):            
-        # Draw rectangle
+        # Draw rectangle: ORIGINAL CODE
+        # canvas.create_rectangle(self.topLeftX, self.topLeftY,
+        #                         self.bottomRightX, self.bottomRightY,
+        #                         fill = self.fill, outline = self.outline,
+        #                         width = 8)
+
+        r = 10
+
+        # Inner rectangle
         canvas.create_rectangle(self.topLeftX, self.topLeftY,
                                 self.bottomRightX, self.bottomRightY,
                                 fill = self.fill, outline = self.outline,
-                                width = 8)
+                                width = 0)
+
+        # Vertical outer rectangle
+        canvas.create_rectangle(self.topLeftX, self.topLeftY - r,
+                                self.bottomRightX, self.bottomRightY + (r+1),
+                                fill = self.fill, outline = self.outline,
+                                width = 0)
+
+        # Horizontal outer rectangle
+        canvas.create_rectangle(self.topLeftX - r, self.topLeftY,
+                                self.bottomRightX + (r+1), self.bottomRightY,
+                                fill = self.fill, outline = self.outline,
+                                width = 0)
+        
+        
+        # Draw round corners to smoothen out
+        # Top left oval
+        canvas.create_oval(self.topLeftX + r, self.topLeftY + r,
+                           self.topLeftX - r, self.topLeftY - r,
+                           fill = 'blue', outline = 'blue')
+
+        # Bottom right oval
+        canvas.create_oval(self.bottomRightX + r, self.bottomRightY + r,
+                           self.bottomRightX - r, self.bottomRightY - r,
+                           fill = 'blue', outline = 'blue')
+        # Bottom left oval
+        canvas.create_oval(self.topLeftX + r, self.bottomRightY + r,
+                           self.topLeftX - r, self.bottomRightY - r,
+                           fill = 'blue', outline = 'blue')
+        
+        # Top right oval
+        canvas.create_oval(self.bottomRightX + r, self.topLeftY + r,
+                           self.bottomRightX - r, self.topLeftY - r,
+                           fill = 'blue', outline = 'blue')        
+
+        
         # Draw text
         canvas.create_text(self.centerButtonX, self.centerButtonY,
                            text = self.text,
                            fill = self.textColour,
-                           font = f'Visby {self.fontSize} bold')                
+                           font = ("Comic Sans MS", self.fontSize, "bold"))
+
 
 ###########################################################################
 
@@ -115,7 +157,7 @@ class Button():
 
 
 ######################### TEXT BOX ######################################
-class TextBox():        
+class TextBox(Button):        
     def __init__(self, app, text, proportion, textColour, fill):
         self.text = text + ' '
         self.proportion = proportion
@@ -150,16 +192,23 @@ class TextBox():
             self.pressed = False
 
                    
-    def draw(self, canvas):            
-        # Draw rectangle
-        canvas.create_rectangle(self.topLeftX, self.topLeftY,
-                                self.bottomRightX, self.bottomRightY,
-                                fill = self.fill)
+    def draw(self, canvas):        
+        # Draw rounded rectangle
+        drawRoundedRectangle(self.topLeftX + 10, self.topLeftY + 10,
+                             self.bottomRightX + 10, self.bottomRightY + 10,
+                             'green', 10, canvas)
+    
+        drawRoundedRectangle(self.topLeftX, self.topLeftY,
+                             self.bottomRightX, self.bottomRightY,
+                             'lightgreen', 10, canvas)
+
+
+        
         # Draw text
         canvas.create_text(self.centerButtonX, self.centerButtonY,
                            text = self.text,
                            fill = self.textColour,
-                           font = f'Visby {self.fontSize} bold')
+                           font = ("Comic Sans MS", self.fontSize, "bold"))
 
 
 ###########################################################################        
@@ -258,6 +307,11 @@ class roadDash():
 
 
     def move(self, app, displacement):
+        # for i in range(displacement):
+        #     self.individualMove(app, 1)
+        self.individualMove(app, displacement)
+
+    def individualMove(self, app, displacement):
         # Readjust all variables to project forwards (look at math of projection in folder)
         #  We are projecting forwards now, instead of backwards
         nx0 = self.x0 + (displacement/sqrt(1 + (self.cm**2)))
@@ -265,7 +319,8 @@ class roadDash():
 
         # Readjust object
         self.__init__(app, 'white', 'black',
-                      ny0, self.w + 0.5, self.depth + 1)
+                      ny0, self.w + displacement/8,
+                      self.depth + displacement/6)
 
         # Check if building is out of canvas through point nx5
         # nx5 = nx0 + (1.01*self.depthLower/sqrt(1+(self.cm**2)))
@@ -298,7 +353,6 @@ class LeftBuildings():
 
 
             
-
 class LeftBuilding():
     def __init__(self, app, width, height, depth,
                  x0, y0,
@@ -476,11 +530,6 @@ class RightBuilding():
         self.y4 = (self.lm * self.x4) + self.lb
 
 
-        # print(f'Building(app, {self.w}, {self.h}, {self.depthLower}, {self.x0}, {self.y0})')
-        # print('-----------------')        
-        
-        # Set fill to be random color?
-        # self.fill = app.colors[]
         
     def draw(self, app, canvas):
         
@@ -524,8 +573,7 @@ class RightBuilding():
                           710, 340,
                           'gray', 'gray')
 
-        # print(f'Building(app, {self.w}, {self.h}, {self.depthLower}, {self.x0}, {self.y0})')
-        # print('-----------------') 
+            
         
 class Arm():
     def __init__(self, app,
@@ -577,6 +625,23 @@ class AllCoins():
             coin.move(app, displacement)
 
 
+    def resetCoins(self, app):
+        if app.coinIndex == 0:
+            app.currentCoin = self.coins[1]
+            app.coinIndex = 1
+        else:
+            app.currentCoin = self.coins[0]
+            app.coinIndex = 0
+
+        # randomize color of coin        
+        app.currentColor = app.colors[randint(0,len(app.colors)-1)]
+
+        # reset coordinates of coins
+        self.coins[0].__init__(app, 530, 300, 50)
+        self.coins[1].__init__(app, 630, 300, 50)
+
+
+
 class CoinLeft():
     def __init__(self, app, x0, y0, radius):
         self.x0 = x0
@@ -587,7 +652,7 @@ class CoinLeft():
         app.starting_y0 = 300
         app.starting_r = 40
         
-        self.fill = 'yellow'
+        self.fill = app.currentColor
         self.outlineColor = 'black'       
 
         # Line equation for center point: y = mx + b
@@ -627,35 +692,7 @@ class CoinLeft():
         
         else:
             return False
-
         
-# class CoinRight(CoinLeft): # we only need to change 'move' function to move with respect to different line
-#     def __init__(self, app, x0, y0, radius):
-#         super().__init__(app, x0, y0, radius)
-
-#         # Line equation for center point: y = mx + b
-#         self.cm = (app.cy-self.y0)/(app.cx-self.x0) # m = \delta y/ \delta x
-#         self.cb = app.cy - (self.cm * app.cx)# b = (y - mx)    
-
-
-
-#     def move(self, app, displacement):
-#         super().move(app, displacement)
-#         # Readjust all variables to project forwards (look at math of projection in TP folder)
-#         #  We are projecting forwards the coin
-#         nx0 = self.x0 + (displacement/sqrt(1 + (self.cm**2)))
-#         ny0 = (self.cm * nx0) + self.cb
-
-#         # Account for coin being closer
-#         self.__init__(app, nx0, ny0, 1.01*self.r)
-
-#         # Check if building is out of canvas through point nxy 
-#         if ny0 > app.height :
-#             # reset the coin
-#             self.__init__(app, 630, 300, 40)
-
-
-
 
 
 class CoinRight():
@@ -665,7 +702,7 @@ class CoinRight():
         self.r = radius
 
         
-        self.fill = 'yellow'
+        self.fill = app.currentColor
         self.outlineColor = 'black'       
 
         # Line equation for center point: y = mx + b
@@ -693,9 +730,8 @@ class CoinRight():
 
         # Check if building is out of canvas through point nxy 
         if ny0 + 200 > app.height :
-            # generate random coin
+            # reset
             self.__init__(app, 630, 300, 40)
-            # app.currentCoin= app.COINS.coins[randint(0, len(app.COINS.coins) - 1)]
 
 
 
@@ -710,17 +746,6 @@ class CoinRight():
         
         else:
             return False
-
-
-
-
-
-
-
-
-
-
-
 
 
 
